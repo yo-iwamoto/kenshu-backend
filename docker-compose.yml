@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile.web
     volumes:
-      - ./app:/var/www/html/app
+      - .:/var/www/html
     ports:
       - ${WEB_PORT}:80
 
