@@ -1,0 +1,11 @@
+{
+    "name": "you.iwamoto/backend",
+    "type": "project",
+    "authors": [
+        {
+            "name": "you-5805",
+            "email": "you.iwamoto@prtimes.co.jp"
+        }
+    ],
+    "require": {}
+}
