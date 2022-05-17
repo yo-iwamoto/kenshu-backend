@@ -8,7 +8,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'POST') {
     $file_path = './assets/img/users/' . Uuid::uuid4() . '_' . $_FILES['profile_image']['name'];
-    move_uploaded_file($_FILES['profile_image']['tmp_name'], $file_path);
 
     try {
         User::create(array(
@@ -18,11 +17,12 @@ if ($method === 'POST') {
             'profile_image_url' => $file_path,
         ));
 
+        // INSERT が成功してからファイルを配置
+        move_uploaded_file($_FILES['profile_image']['tmp_name'], $file_path);
+
         $user = User::get_by_email($_POST['email']);
     } catch (Exception $err) {
         // TODO: 登録フォームを保ったままエラーを表示
-
-        // TODO: upload したファイルの削除
     }
 }
 ?>
