@@ -36,17 +36,21 @@ if ($method === 'POST') {
     <main class="mx-4 font-mono">
         <div class="max-w-xl mx-auto mt-10">
             <?php if ($method === 'GET') { ?>
+
             <h1 class="text-center font-bold text-xl">新規会員登録</h1>
             <?php include './partials/register_form.php' ?>
+            <script src="assets/js/index.js"></script>
+
             <?php } else { ?>
+
             <h1 class="text-center font-bold text-xl">登録が完了しました</h1>
             <section class="my-4">
                 <?php include './partials/user.php' ?>
             </section>
+
             <?php } ?>
         </div>
     </main>
-    <script src=" assets/js/index.js"></script>
 </body>
 
 </html>
