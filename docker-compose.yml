@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile.web
     volumes:
       - .:/var/www/html
+      - ./php:/usr/local/etc/php
     ports:
       - ${WEB_PORT}:80
 
