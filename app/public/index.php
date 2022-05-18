@@ -1,54 +1,50 @@
 <?php
 require_once '../config/initialize.php';
-require_once '../models/user.php';
 
-use Ramsey\Uuid\Uuid;
-
-$method = $_SERVER['REQUEST_METHOD'];
-
-if ($method === 'POST') {
-    $file_path = './assets/img/users/' . Uuid::uuid4() . '_' . $_FILES['profile_image']['name'];
-
-    try {
-        User::create(array(
-            'email' => $_POST['email'],
-            'name' => $_POST['name'],
-            'password' => $_POST['password'],
-            'profile_image_url' => $file_path,
-        ));
-
-        // INSERT が成功してからファイルを配置
-        move_uploaded_file($_FILES['profile_image']['tmp_name'], $file_path);
-
-        $user = User::get_by_email($_POST['email']);
-    } catch (Exception $err) {
-        // TODO: 登録フォームを保ったままエラーを表示
-    }
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="ja">
 
-<?php include './partials/head.php' ?>
+<head>
+    <?php include './partials/head.php' ?>
+</head>
 
 <body>
-    <main class="mx-4 font-mono">
-        <div class="max-w-xl mx-auto mt-10">
-            <?php if ($method === 'GET') { ?>
+    <main class="font-mono">
+        <?php include './partials/flash.php' ?>
+        <?php include './partials/header.php' ?>
+        <div class="mx-4">
+            <div class="max-w-xl mx-auto">
+                <?php if (isset($_SESSION['user_id'])) { ?>
 
-            <h1 class="text-center font-bold text-xl">新規会員登録</h1>
-            <?php include './partials/register_form.php' ?>
-            <script src="assets/js/index.js"></script>
+                <h1 class="text-center"></h1>
 
-            <?php } else { ?>
+                <?php } else { ?>
 
-            <h1 class="text-center font-bold text-xl">登録が完了しました</h1>
-            <section class="my-4">
-                <?php include './partials/user.php' ?>
+                <p class="text-center mt-6">
+                    <span class="whitespace-nowrap">KENSHU TIMESでは</span>
+                    <span class="whitespace-nowrap">なんと、画像付きの記事が投稿できます</span>
+                </p>
+                <div class="flex justify-center gap-8 my-10">
+                    <div class="text-center">
+                        <p class="mb-2">まずは</p>
+                        <a class="text-white px-4 py-2 bg-teal-600 inline-block hover:bg-teal-500 rounded-lg"
+                            href="/auth/signup/">新規会員登録</a>
+                    </div>
+                    <div class="text-center">
+                        <p class="mb-2">または</p>
+                        <a class="text-teal-600 px-4 py-2 border border-teal-600 inline-block hover:bg-teal-50 rounded-lg"
+                            href="/auth/login/">ログイン</a>
+                    </div>
+                </div>
+
+                <?php } ?>
+            </div>
+
+            <section class="mt-8">
+                <h1 class="font-bold text-xl">記事一覧</h1>
             </section>
-
-            <?php } ?>
         </div>
     </main>
 </body>

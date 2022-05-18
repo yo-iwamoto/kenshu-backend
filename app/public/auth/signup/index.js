@@ -1,15 +1,15 @@
 /**
  * @description preview chosen image
- * @requires input#image, div#preview-container
+ * @requires input#image, div#js-preview-container
  * TODO: 一度プレビューを表示した後画像を変更すると壊れる
  */
 const previewImageWhenImageChosen = () => {
   const $imageInput = document.getElementById('image');
-  const $previewContainer = document.getElementById('preview-container');
-  const $preview = document.getElementById('preview');
+  const $previewContainer = document.getElementById('js-preview-container');
+  const $preview = document.getElementById('js-preview');
 
   if ($imageInput === null || $previewContainer === null) {
-    throw new Error('invalid DOM');
+    throw new Error();
   }
 
   $imageInput.addEventListener('change', (e) => {
@@ -18,7 +18,7 @@ const previewImageWhenImageChosen = () => {
 
       const $image = document.createElement('img');
       $image.src = url;
-      $image.id = 'preview';
+      $image.id = 'js-preview';
       $image.alt = 'プロフィール画像のプレビュー';
       $image.width = 200;
 
