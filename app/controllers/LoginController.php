@@ -8,6 +8,24 @@ use App\models\User;
 
 class LoginController extends Controller
 {
+    public function handle()
+    {
+        if ($this->getUserId() !== null) {
+            Helper::redirectTmp(path: '/');
+            return;
+        }
+
+        switch ($this->request->server['REQUEST_METHOD']) {
+            case 'GET':
+                $this->new();
+                break;
+
+            case 'POST':
+                $this->login();
+                break;
+        }
+    }
+
     private function new()
     {
     }
@@ -22,24 +40,6 @@ class LoginController extends Controller
             return;
         } else {
             // TODO: エラーのフィードバック
-        }
-    }
-
-    public function handle()
-    {
-        if ($this->getUserId() !== null) {
-            Helper::redirectTmp(path: '/');
-            return;
-        }
-        
-        switch ($this->request->server['REQUEST_METHOD']) {
-            case 'GET':
-                $this->new();
-                break;
-
-            case 'POST':
-                $this->login();
-                break;
         }
     }
 }
