@@ -1,6 +1,9 @@
 <?php
 namespace App\lib;
 
+/**
+ * @todo 適切な場所に分割
+ */
 class Helper
 {
     public static function redirectTmp(string $path)

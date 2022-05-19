@@ -61,7 +61,7 @@ class User
      * email の一致するレコードを取得し User で返す
      * @param string $email
      * @return User
-     * TODO: 存在しない email で壊れる。
+     * @todo 存在しない email で壊れるのを修正
      */
     public static function get_by_email(string $email)
     {
@@ -79,7 +79,7 @@ class User
      * id の一致するレコードを取得し User で返す
      * @param string $id
      * @return User
-     * TODO: 存在しない id で壊れる。
+     * @todo 存在しない id で壊れるのを修正
      */
     public static function get_by_id(string $id)
     {

@@ -2,6 +2,9 @@
 
 namespace App\lib;
 
+/**
+ * グローバル定数から Request オブジェクトを作成する
+ */
 class Request
 {
     public readonly array $server;
