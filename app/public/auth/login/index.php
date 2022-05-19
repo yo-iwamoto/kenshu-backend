@@ -7,10 +7,6 @@ use App\views\partials;
 $controller = new LoginController();
 $controller->handle();
 
-// partials
-$head = new partials\Head();
-$header = new partials\Header();
-
 ?>
 
 <!DOCTYPE html>
