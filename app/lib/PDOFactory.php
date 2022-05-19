@@ -1,5 +1,9 @@
 <?php
 
+namespace App\lib;
+
+use PDO;
+
 class PDOFactory
 {
     public static function create()

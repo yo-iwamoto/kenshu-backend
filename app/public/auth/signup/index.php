@@ -1,10 +1,10 @@
 <?php
-require_once '../../../config/initialize.php';
-require_once '../../../models/user.php';
-require_once '../../../lib/flash.php';
+require_once '../../../lib/initialize.php';
 
-use Lib\Flash;
 use Ramsey\Uuid\Uuid;
+
+use App\models\User;
+use App\views\partials;
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -28,25 +28,22 @@ if ($method === 'POST') {
         $user = User::get_by_email($_POST['email']);
 
         $_SESSION['user_id'] = $user->id;
-
-        $flash = Flash::register(message: '登録が完了しました');
-    } catch (Exception $err) {
+    } catch (Exception $err) { // TODO: エラーの種類を拾う
         // TODO: 登録フォームを保ったままエラーを表示
-        // TODO: violate
+        // TODO: 既にユーザーが存在する時、ログインページへ遷移
         print_r($err);
     }
 }
+
 ?>
 
 <!DOCTYPE html>
-<html lang="ja">
 
-<?php include '../../partials/head.php' ?>
+<?php partials\Head::render() ?>
 
 <body>
     <div class="font-mono">
-        <?php include '../../partials/flash.php' ?>
-        <?php include '../../partials/header.php' ?>
+        <?php partials\Header::render(is_logged_in: isset($_SESSION['user_id'])) ?>
         <main>
             <div class="mx-4">
                 <div class="max-w-xl mx-auto mt-10">
@@ -83,8 +80,8 @@ if ($method === 'POST') {
                         <div>
                             <label for="password"
                                 class="font-bold before:content-['*'] before:text-red-500 before:pr-1">パスワード<small
-                                    class="pl-2">(100文字以内の半角英数・記号で入力してください。)</small></label>
-                            <input id="password" type="password" name="password"
+                                    class="pl-2">(72文字以内の半角英数・記号で入力してください。)</small></label>
+                            <input id="password" type="password" name="password" maxlength="72"
                                 class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required>
                         </div>
 

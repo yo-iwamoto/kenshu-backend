@@ -17,10 +17,10 @@ const previewImageWhenImageChosen = () => {
       const url = window.URL.createObjectURL(e.target.files[0]);
 
       const $image = document.createElement('img');
-      $image.src = url;
-      $image.id = 'js-preview';
-      $image.alt = 'プロフィール画像のプレビュー';
-      $image.width = 200;
+      $image.setAttribute('src', url);
+      $image.setAttribute('id', 'js-preview');
+      $image.setAttribute('alt', 'プロフィール画像のプレビュー');
+      $image.setAttribute('width', 200);
 
       $previewContainer.appendChild($image);
     }

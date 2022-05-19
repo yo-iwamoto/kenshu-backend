@@ -1,10 +1,8 @@
 <?php
-require_once '../../../config/initialize.php';
-require_once '../../../lib/redirect.php';
-require_once '../../../lib/flash.php';
+require_once '../../../lib/initialize.php';
+
+use App\lib\Helper;
 
 unset($_SESSION['user_id']);
 
-Lib\Flash::register(message: 'ログアウトしました');
-
-header('Location: http://localhost:2222');
+Helper::redirectTmp('/');

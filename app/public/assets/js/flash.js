@@ -10,9 +10,11 @@ const controlFlash = () => {
     throw new Error();
   }
 
-  $closeFlashButton.addEventListener('click', () => {
-    $flash.remove();
-  });
+  // 手動で消す場合
+  $closeFlashButton.addEventListener('click', () => $flash.remove());
+
+  // 操作しない場合5秒で消える
+  setTimeout(() => $flash.remove());
 };
 
 controlFlash();

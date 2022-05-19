@@ -1,26 +1,23 @@
 <?php
-require_once '../config/initialize.php';
+
+require_once '../lib/initialize.php';
+
+use App\views\partials;
 
 ?>
 
 <!DOCTYPE html>
-<html lang="ja">
 
 <head>
-    <?php include './partials/head.php' ?>
+    <?php partials\Head::render() ?>
 </head>
 
 <body>
     <main class="font-mono">
-        <?php include './partials/flash.php' ?>
-        <?php include './partials/header.php' ?>
+        <?php partials\Header::render(is_logged_in: isset($_SESSION['user_id'])) ?>
         <div class="mx-4">
             <div class="max-w-xl mx-auto">
-                <?php if (isset($_SESSION['user_id'])) { ?>
-
-                <h1 class="text-center"></h1>
-
-                <?php } else { ?>
+                <?php if (!isset($_SESSION['user_id'])) { ?>
 
                 <p class="text-center mt-6">
                     <span class="whitespace-nowrap">KENSHU TIMESでは</span>

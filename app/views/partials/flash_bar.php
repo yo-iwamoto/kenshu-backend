@@ -1,8 +1,23 @@
-<?php if ($flash !== null) { ?>
+<?php
+
+namespace App\views\partials;
+
+use App\lib\Flash;
+
+class FlashBar
+{
+    public function __construct(private ?Flash $flash)
+    {
+    }
+
+    public function render()
+    {
+        if ($this->flash !== null) {
+            ?>
 <div id="js-flash"
-    class="absolute right-8 top-24 p-1.5 opacity-90 shadow-lg rounded-lg <?= $flash->type === 'error' ? 'bg-red-600' : 'bg-teal-600' ?>">
+    class="absolute right-8 top-24 p-1.5 opacity-90 shadow-lg rounded-lg <?= $this->flash->type === 'error' ? 'bg-red-600' : 'bg-teal-600' ?>">
     <p class="text-white flex items-center">
-        <?php if ($flash->type === 'error') { ?>
+        <?php if ($this->flash->type === 'error') { ?>
 
         <svg xmlns="http://www.w3.org/2000/svg" class="fill-white h-8 w-8 mr-1">
             <path style="transform: scale(0.63)"
@@ -17,7 +32,7 @@
         </svg>
 
         <?php } ?>
-        <span class="mr-3"><?= $flash->message ?></span>
+        <span class="mr-3"><?= $this->flash->message ?></span>
 
         <button id="js-close-flash" class="pt-0.5">
             <svg xmlns="http://www.w3.org/2000/svg" class="fill-white h-6 w-6 mr-1">
@@ -28,4 +43,7 @@
     </p>
 </div>
 <script src="/assets/js/flash.js"></script>
-<?php }
+<?php
+        }
+    }
+}

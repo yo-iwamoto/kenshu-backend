@@ -1,11 +1,12 @@
 <?php
-namespace Lib;
+
+namespace App\lib;
 
 class Flash
 {
     private function __construct(
-        public string $message,
-        public string $type,
+        public readonly string $message,
+        public readonly string $type,
     ) {
     }
 

@@ -1,34 +1,24 @@
 <?php
-require_once '../../../config/initialize.php';
-require_once '../../../models/user.php';
-require_once '../../../lib/redirect.php';
-require_once '../../../lib/flash.php';
+require_once '../../../lib/initialize.php';
 
-if (!isset($_SSSION['user_id'])) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $user = User::get_by_email($_POST['email']);
-        if ($user->login($_POST['password'])) {
-            $_SESSION['user_id'] = $user->id;
+use App\controllers\LoginController;
+use App\views\partials;
 
-            $_SESSION['flash'] = Lib\Flash::register(message: 'ログインしました');
-            redirect_tmp('/');
-        } else {
-            Lib\Flash::register(message: 'メールアドレスかパスワードが誤っています', type: 'error');
-        }
-    }
-}
+$controller = new LoginController();
+$controller->handle();
+
+// partials
+$head = new partials\Head();
+$header = new partials\Header();
 
 ?>
 
 <!DOCTYPE html>
 
-<html lang="ja">
-
-<?php include '../../partials/head.php' ?>
+<?php partials\Head::render() ?>
 
 <body>
-    <?php include '../../partials/flash.php' ?>
-    <?php include '../../partials/header.php' ?>
+    <?php partials\Header::render(is_logged_in: isset($_SESSION['user_id'])) ?>
     <main class="font-mono mx-4">
         <div class="max-w-xl mx-auto mt-10">
             <h1 class="text-center font-bold text-xl mb-4">ログイン</h1>

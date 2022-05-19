@@ -1,14 +1,15 @@
 <?php
-require_once dirname(__FILE__, 2) . '/lib/pdo.php';
-require_once dirname(__FILE__, 2) . '/lib/flash.php';
+namespace App\models;
+
+use App\lib\PDOFactory;
 
 class User
 {
-    public string $id;
-    public string  $name;
-    public string $profile_image_url;
-    public string $email;
-    public ?string $created_at;
+    public readonly string $id;
+    public readonly string  $name;
+    public readonly ?string $profile_image_url;
+    public readonly string $email;
+    public readonly string $created_at;
     private string $password_hash;
 
     private function __construct(array $row)
@@ -47,7 +48,7 @@ class User
             $statement->execute();
         } catch (PDOException $err) {
             if ($err->getCode() === '23505') {
-                Lib\Flash::register(message: '指定したメールアドレスは既に登録済みです。ログインしてください。', type: 'error');
+                // TODO: フィードバック
             } else {
                 print_r($err);
                 throw Exception('failed adding data');
