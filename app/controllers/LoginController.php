@@ -8,7 +8,7 @@ use App\models\User;
 
 class LoginController extends Controller
 {
-    private function new_login()
+    private function new()
     {
     }
     
@@ -34,7 +34,7 @@ class LoginController extends Controller
         
         switch ($this->request->server['REQUEST_METHOD']) {
             case 'GET':
-                $this->new_login();
+                $this->new();
                 break;
 
             case 'POST':
