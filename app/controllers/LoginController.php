@@ -8,29 +8,19 @@ use App\models\User;
 
 class LoginController extends Controller
 {
-    public function handle()
+    protected function preHandle()
     {
         if ($this->getUserId() !== null) {
             Helper::redirectTmp(path: '/');
             return;
         }
-
-        switch ($this->request->server['REQUEST_METHOD']) {
-            case 'GET':
-                $this->new();
-                break;
-
-            case 'POST':
-                $this->login();
-                break;
-        }
     }
 
-    private function new()
+    protected function get()
     {
     }
     
-    private function login()
+    protected function post()
     {
         $user = User::get_by_email($this->request->post['email']);
         if ($user->login($this->request->post['password'])) {

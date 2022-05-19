@@ -10,29 +10,19 @@ use App\models\User;
 
 class SignupController extends Controller
 {
-    public function handle()
+    protected function preHandle()
     {
         if ($this->getUserId() !== null) {
             Helper::redirectTmp(path: '/');
             return;
         }
-        
-        switch ($this->request->server['REQUEST_METHOD']) {
-            case 'GET':
-                $this->new();
-                break;
-
-            case 'POST':
-                $this->signup();
-                break;
-        }
     }
-    
-    private function new()
+
+    protected function get()
     {
     }
     
-    private function signup()
+    protected function post()
     {
         $file_path = '';
     

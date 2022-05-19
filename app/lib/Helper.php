@@ -15,6 +15,6 @@ class Helper
 
     public static function unsetSession(string $key)
     {
-        unsed($_SESSION[$key]);
+        unset($_SESSION[$key]);
     }
 }

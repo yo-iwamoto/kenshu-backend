@@ -11,6 +11,8 @@ class Request
     public readonly ?array $session;
     public readonly ?array $request;
 
+    public readonly string $method;
+
     public function __construct(
     ) {
         $this->server = $_SERVER;
@@ -19,5 +21,7 @@ class Request
         $this->files = $_FILES;
         $this->session = $_SESSION;
         $this->request = $_REQUEST;
+
+        $this->method = $this->server['REQUEST_METHOD'];
     }
 }
