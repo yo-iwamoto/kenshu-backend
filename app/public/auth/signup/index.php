@@ -1,39 +1,12 @@
 <?php
 require_once '../../../lib/initialize.php';
 
-use Ramsey\Uuid\Uuid;
-
+use App\controllers\SignupController;
 use App\models\User;
 use App\views\partials;
 
-$method = $_SERVER['REQUEST_METHOD'];
-
-if ($method === 'POST') {
-    $file_path = '';
-    
-    if (isset($_FILES['profile_image'])) {
-        $file_path = '/assets/img/users/' . Uuid::uuid4() . '_' . $_FILES['profile_image']['name'];
-    }
-
-    try {
-        User::create(
-            email: $_POST['email'],
-            name: $_POST['name'],
-            password: $_POST['password'],
-            profile_image_url: $file_path,
-        );
-
-        move_uploaded_file($_FILES['profile_image']['tmp_name'], '../..' . $file_path);
-
-        $user = User::get_by_email($_POST['email']);
-
-        $_SESSION['user_id'] = $user->id;
-    } catch (Exception $err) { // TODO: エラーの種類を拾う
-        // TODO: 登録フォームを保ったままエラーを表示
-        // TODO: 既にユーザーが存在する時、ログインページへ遷移
-        print_r($err);
-    }
-}
+$controller = new SignupController();
+$controller->handle();
 
 ?>
 
@@ -47,7 +20,8 @@ if ($method === 'POST') {
         <main>
             <div class="mx-4">
                 <div class="max-w-xl mx-auto mt-10">
-                    <?php if ($method === 'GET') { ?>
+                    <!-- TODO: view からアクセスするデータをまとめる -->
+                    <?php if ($_SERVER['REQUEST_METHOD'] === 'GET') { ?>
 
                     <h1 class="text-center font-bold text-xl mb-4">新規会員登録</h1>
 
@@ -93,7 +67,8 @@ if ($method === 'POST') {
                     <?php } else { ?>
 
                     <section class="my-4">
-                        <?php include '../../partials/user.php' ?>
+                        <!-- TODO: view からアクセスするデータをまとめる -->
+                        <?php partials\UserInfo::render(User::get_by_id($_SESSION['user_id'])) ?>
                     </section>
 
                     <?php } ?>

@@ -6,26 +6,22 @@ use App\models\User;
 
 class UserInfo
 {
-    public function __construct(private User $user)
-    {
-    }
-
-    public function render()
+    public static function render(User $user)
     {
         ?>
 <div class="text-center mb-8">
     <img class="rounded-full w-40 h-40 inline-block"
-        src="<?= $this->user->profile_image_url ?>" alt="プロフィール画像">
+        src="<?= $user->profile_image_url ?>" alt="プロフィール画像">
 </div>
 <table>
     <tr>
         <th class="text-left pr-4">ユーザー名</th>
-        <td><?= $this->user->name ?>
+        <td><?= $user->name ?>
         </td>
     </tr>
     <tr>
         <th class="text-left pr-4">メールアドレス</th>
-        <td><?= $this->user->email ?>
+        <td><?= $user->email ?>
         </td>
     </tr>
 </table>

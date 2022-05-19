@@ -2,6 +2,7 @@
 namespace App\models;
 
 use App\lib\PDOFactory;
+use Exception;
 
 class User
 {
@@ -65,7 +66,12 @@ class User
     public static function get_by_email(string $email)
     {
         $pdo = PDOFactory::create();
-        $result = $pdo->query("SELECT * FROM users WHERE email = '$email' LIMIT 1")->fetch();
+        $statement = $pdo->query("SELECT * FROM users WHERE email = '$email' LIMIT 1");
+        if (!$statement) {
+            throw new Exception('no such user');
+        }
+
+        $result = $statement->fetch();
         return new User($result);
     }
 
@@ -78,7 +84,12 @@ class User
     public static function get_by_id(string $id)
     {
         $pdo = PDOFactory::create();
-        $result = $pdo->query('SELECT * FROM users WHERE id = ? LIMIT 1', $id)->fetch();
+        $statement = $pdo->query("SELECT * FROM users WHERE id = $id LIMIT 1");
+        if (!$statement) {
+            throw new Exception('no such user');
+        }
+
+        $result = $statement->fetch();
         return new User($result);
     }
 
