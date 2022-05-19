@@ -4,6 +4,9 @@ namespace App\lib;
 
 use PDO;
 
+/**
+ * PDO を作成する Factory
+ */
 class PDOFactory
 {
     public static function create()
