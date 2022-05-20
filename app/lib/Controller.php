@@ -31,20 +31,26 @@ abstract class Controller
     protected function preHandle()
     {
     }
+
     protected function get()
     {
+        return http_response_code(404);
     }
     protected function post()
     {
+        return http_response_code(404);
     }
     protected function patch()
     {
+        return http_response_code(404);
     }
     protected function put()
     {
+        return http_response_code(404);
     }
     protected function destroy()
     {
+        return http_response_code(404);
     }
 
     public function handle()
