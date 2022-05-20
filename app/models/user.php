@@ -66,10 +66,13 @@ class User
     public static function get_by_email(string $email)
     {
         $pdo = PDOFactory::create();
-        $statement = $pdo->query("SELECT * FROM users WHERE email = '$email' LIMIT 1");
+        $statement = $pdo->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
+        $statement->bindParam(1, $email);
         if (!$statement) {
-            throw new Exception('no such user');
+            throw new Exception('invalid email');
         }
+
+        $statement->execute();
 
         $result = $statement->fetch();
         return new User($result);
@@ -84,10 +87,13 @@ class User
     public static function get_by_id(string $id)
     {
         $pdo = PDOFactory::create();
-        $statement = $pdo->query("SELECT * FROM users WHERE id = $id LIMIT 1");
+        $statement = $pdo->prepare('SELECT * FROM users WHERE id = ? LIMIT 1');
+        $statement->bindParam(1, $id);
         if (!$statement) {
-            throw new Exception('no such user');
+            throw new Exception('invalid id');
         }
+
+        $statement->execute();
 
         $result = $statement->fetch();
         return new User($result);
