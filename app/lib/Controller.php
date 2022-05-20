@@ -11,6 +11,8 @@ use App\lib\Request;
  */
 abstract class Controller
 {
+    const VIEW_BASE_DIR = 'app/views/';
+    
     protected Request $request;
     
     public function __construct(
@@ -18,63 +20,60 @@ abstract class Controller
         $this->request = new Request();
     }
 
-    protected function isLoggedIn()
-    {
-        return isset($this->request->session['user_id']);
-    }
-
-    protected function getUserId()
-    {
-        return $this->isLoggedIn() ? $this->request->session['user_id'] : null;
-    }
-
-    protected function preHandle()
+    protected function preHandle(Request $request)
     {
     }
 
-    protected function get()
+    protected function get(Request $request)
     {
         return http_response_code(404);
     }
-    protected function post()
+    protected function post(Request $request)
     {
         return http_response_code(404);
     }
-    protected function patch()
+    protected function patch(Request $request)
     {
         return http_response_code(404);
     }
-    protected function put()
+    protected function put(Request $request)
     {
         return http_response_code(404);
     }
-    protected function destroy()
+    protected function destroy(Request $request)
     {
         return http_response_code(404);
     }
 
     public function handle()
     {
-        $this->preHandle();
+        $this->preHandle($this->request);
         
         switch ($this->request->method) {
             case 'GET':
-                $this->get();
+                $this->get(request: $this->request);
                 break;
             case 'POST':
-                $this->post();
+                $this->post(request: $this->request);
                 break;
             case 'PATCH':
-                $this->patch();
+                $this->patch(request: $this->request);
                 break;
             case 'PUT':
-                $this->put();
+                $this->put(request: $this->request);
                 break;
             case 'DELETE':
-                $this->destroy();
+                $this->destroy(request: $this->request);
                 break;
             default:
-                // TODO: 404
+                return http_response_code(404);
         }
+    }
+
+    public function view(string $path)
+    {
+        $file_path = self::VIEW_BASE_DIR . $path;
+        require_once $file_path;
+        // TODO: データの展開
     }
 }

@@ -34,7 +34,7 @@ class User
         string $name,
         string $email,
         string $password,
-        string $profile_image_url = '',
+        string $profile_image_url,
     ) {
         $pdo = PDOFactory::create();
 

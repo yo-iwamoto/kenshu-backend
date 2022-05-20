@@ -1,8 +1,6 @@
 <?php
-
-use App\controllers\LogoutController;
-
 require_once '../../../lib/initialize.php';
 
-$controller = new LogoutController();
-$controller->handle();
+use App\controllers\auth\LogoutController;
+
+(new LogoutController())->handle();
