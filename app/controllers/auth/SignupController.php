@@ -2,10 +2,8 @@
 
 namespace App\controllers\auth;
 
-use Ramsey\Uuid\Nonstandard\Uuid;
-
 use App\lib\Controller;
-use App\models\User;
+use App\services\SignupService;
 
 class SignupController extends Controller
 {
@@ -25,29 +23,8 @@ class SignupController extends Controller
     
     protected function post($request)
     {
-        $uploaded_file_path = null;
-
-        if ($request->files['profile_image']['tmp_name'] !== '') {
-            $uploaded_file_path = '/assets/img/users/' . Uuid::uuid4() . '_' . $request->files['profile_image']['name'];
-        }
-
-        $profile_image_url = $uploaded_file_path !== null ? $uploaded_file_path : '/assets/img/default-icon.jpg';
-
         try {
-            User::create(
-                email: $request->post['email'],
-                name: $request->post['name'],
-                password: $request->post['password'],
-                profile_image_url: $profile_image_url,
-            );
-
-            if ($uploaded_file_path) {
-                move_uploaded_file($request->files['profile_image']['tmp_name'], '../..' . $file_path);
-            }
-
-            $user = User::get_by_email($request->post['email']);
-
-            $request->setSession('user_id', $user->id);
+            SignupService::execute($request);
 
             $this->view(self::VIEW_DIR . 'post.php');
         } catch (Exception $err) { // TODO: エラーの種類を拾う
