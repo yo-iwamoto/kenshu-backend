@@ -1,6 +1,6 @@
 <?php
 require_once '../lib/initialize.php';
 
-use App\controllers\RootController;
+use App\controllers\HomeController;
 
-(new RootController())->handle();
+(new HomeController())->handle();
