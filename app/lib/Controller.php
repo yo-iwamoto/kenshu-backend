@@ -3,6 +3,7 @@
 namespace App\lib;
 
 use App\lib\Request;
+use App\models\User;
 
 /**
  * コントローラーのベースクラス
@@ -70,10 +71,23 @@ abstract class Controller
         }
     }
 
-    public function view(string $path)
+    public function view(string $path, array $data = [])
     {
+        // 受け取ったデータを変数宣言
+        foreach ($data as $key => $value) {
+            $$key = $value;
+        }
+        // 共通で利用する変数
+        $is_authenticated = $this->request->isAuthenticated();
+        $user = $is_authenticated ? User::get_by_id($this->request->getSession('user_id')) : null;
+        
         $file_path = self::VIEW_BASE_DIR . $path;
+
+        ob_start();
         require_once $file_path;
+        $content = ob_get_clean();
+
+        require_once('app/views/application.php');
         // TODO: データの展開
     }
 }
