@@ -6,9 +6,13 @@ use App\models\User;
 
 class UserInfo
 {
-    public static function render(User $user)
+    public static function render(?User $user)
     {
-        ?>
+        if ($user === null) {
+            ?>
+<span></span>
+<?php
+        } else { ?>
 <div class="text-center mb-8">
     <img class="rounded-full w-40 h-40 inline-block"
         src="<?= $user->profile_image_url !== null ? $user->profile_image_url : 'assets/img/default-icon.jpg' ?>"
@@ -30,5 +34,6 @@ class UserInfo
     </tr>
 </table>
 <?php
+}
     }
 }
