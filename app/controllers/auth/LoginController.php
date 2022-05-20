@@ -8,7 +8,7 @@ use App\models\User;
 class LoginController extends Controller
 {
     const VIEW_DIR = 'auth/login/';
-    
+
     protected function preHandle($request)
     {
         if ($request->isAuthenticated()) {
@@ -20,7 +20,7 @@ class LoginController extends Controller
     {
         $this->view(self::VIEW_DIR . 'get.php');
     }
-    
+
     protected function post($request)
     {
         $user = User::get_by_email($request->post['email']);
