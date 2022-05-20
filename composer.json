@@ -1,0 +1,19 @@
+{
+    "name": "you.iwamoto/backend",
+    "type": "project",
+    "authors": [
+        {
+            "name": "you-5805",
+            "email": "you.iwamoto@prtimes.co.jp"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.4",
+        "ramsey/uuid": "^4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
