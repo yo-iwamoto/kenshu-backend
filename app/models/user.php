@@ -75,6 +75,10 @@ class User
         $statement->execute();
 
         $result = $statement->fetch();
+
+        if (!$result) {
+            throw new Exception('no such user');
+        }
         return new User($result);
     }
 
@@ -96,6 +100,10 @@ class User
         $statement->execute();
 
         $result = $statement->fetch();
+
+        if (!$result) {
+            throw new Exception('no such user');
+        }
         return new User($result);
     }
 
