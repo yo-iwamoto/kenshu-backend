@@ -79,7 +79,7 @@ abstract class Controller
         }
         // 共通で利用する変数
         $is_authenticated = $this->request->isAuthenticated();
-        $user = $is_authenticated ? User::get_by_id($this->request->getSession('user_id')) : null;
+        $current_user = $is_authenticated ? User::get_by_id($this->request->getSession('user_id')) : null;
         
         $file_path = self::VIEW_BASE_DIR . $path;
 
