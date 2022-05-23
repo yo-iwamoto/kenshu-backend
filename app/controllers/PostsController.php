@@ -21,4 +21,20 @@ class PostsController extends Controller
 
         $this->addData('post', $post);
     }
+
+    protected function create($request)
+    {
+        $current_user = $request->getCurrentUser();
+        if ($current_user === null) {
+            return http_response_code(403);
+        }
+        
+        Post::create(
+            user_id: $current_user->id,
+            title: $request->post['title'],
+            content: $request->post['content'],
+        );
+
+        $request->redirect('/posts');
+    }
 }
