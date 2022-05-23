@@ -1,15 +1,21 @@
 <?php
 namespace App\controllers;
 
+use App\lib\Request;
 use App\lib\Controller;
 
 class HomeController extends Controller
 {
-    protected function get($request)
+    const VIEW_DIR = '';
+
+    protected function beforeAction(Request $request)
     {
-        // 記事の取得
-        $posts = [];
-        
-        $this->view('get.php');
+        if ($request->isAuthenticated()) {
+            $request->redirect('/posts');
+        }
+    }
+
+    protected function index($_)
+    {
     }
 }

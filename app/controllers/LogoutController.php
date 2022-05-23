@@ -1,12 +1,13 @@
 <?php
-
-namespace App\controllers\auth;
+namespace App\controllers;
 
 use App\lib\Controller;
 
 class LogoutController extends Controller
 {
-    protected function post($request)
+    const VIEW_DIR = 'logout/';
+
+    protected function create($request)
     {
         $request->unsetSession('user_id');
 

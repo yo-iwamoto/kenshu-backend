@@ -4,7 +4,7 @@
 
         <hr class="mb-6">
 
-        <form method="POST" action="/auth/login/" class="flex flex-col gap-8" enctype="multipart/form-data">
+        <form method="POST" action="/sessions/" class="flex flex-col gap-8" enctype="multipart/form-data">
             <div>
                 <label for="email" class="font-bold">メールアドレス</label>
                 <input id="email" type="email" name="email" placeholder="sample@example.com"

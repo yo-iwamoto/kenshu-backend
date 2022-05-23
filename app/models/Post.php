@@ -42,4 +42,20 @@ class Post
 
         return $result;
     }
+
+    public static function getById(string $id)
+    {
+        $pdo = PDOFactory::create();
+
+        $statement = $pdo->prepare('SELECT * FROM posts WHERE id = ? LIMIT 1');
+        $statement->bindParam(1, $id);
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if (!$result) {
+            throw new Exception('no such post');
+        }
+        return new Post($result);
+    }
 }
