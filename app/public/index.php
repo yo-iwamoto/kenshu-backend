@@ -37,10 +37,6 @@ class Initializer
                 return new HomeController('');
             },
 
-            '/posts' => function () {
-                return new PostsController('posts/');
-            },
-
             '/sessions' => function () {
                 return new SessionsController('sessions/');
             },
