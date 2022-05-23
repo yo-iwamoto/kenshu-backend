@@ -27,7 +27,7 @@ class SessionsController extends Controller
 
         // TODO: バリデーション
 
-        $user = User::get_by_email($request->post['email']);
+        $user = User::getByEmail($request->post['email']);
         if ($user->login($request->post['password'])) {
             $request->setSession('user_id', $user->id);
 

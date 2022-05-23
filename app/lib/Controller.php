@@ -66,7 +66,7 @@ abstract class Controller
         $is_authenticated = $request->isAuthenticated();
         $data = array_merge($this->data, array(
             'is_authenticated' => $is_authenticated,
-            'current_user' => $is_authenticated ? User::get_by_id($request->getSession('user_id')) : null,
+            'current_user' => $is_authenticated ? User::getById($request->getSession('user_id')) : null,
         ));
         unset($is_authenticated);
 

@@ -63,7 +63,7 @@ class User
      * @return User
      * @todo 存在しない email で壊れるのを修正
      */
-    public static function get_by_email(string $email)
+    public static function getByEmail(string $email)
     {
         $pdo = PDOFactory::create();
         $statement = $pdo->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
@@ -88,7 +88,7 @@ class User
      * @return User
      * @todo 存在しない id で壊れるのを修正
      */
-    public static function get_by_id(string $id)
+    public static function getById(string $id)
     {
         $pdo = PDOFactory::create();
         $statement = $pdo->prepare('SELECT * FROM users WHERE id = ? LIMIT 1');

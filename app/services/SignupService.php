@@ -30,7 +30,7 @@ class SignupService
             move_uploaded_file($request->files['profile_image']['tmp_name'], '../..' . $uploaded_file_path);
         }
             
-        $user = User::get_by_email($request->post['email']);
+        $user = User::getByEmail($request->post['email']);
 
         $request->setSession('user_id', $user->id);
 
