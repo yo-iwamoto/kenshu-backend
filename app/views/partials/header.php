@@ -14,7 +14,9 @@ class Header
     <?php if ($is_authenticated) { ?>
     <form action="/logout/" method="POST">
         <button type="submit"
-            class="px-3 py-1 text-sm text-orange-500 rounded-lg border border-orange-500 hover:bg-orange-50">ログアウト</button>
+            class="before:absolute before:right-8 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['ログアウト'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block">
+            <img class="h-6 w-6" src="/assets/img/logout.png" alt="ログアウト">
+        </button>
     </form>
 
     <?php } ?>
