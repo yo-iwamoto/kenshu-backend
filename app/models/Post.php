@@ -26,9 +26,6 @@ class Post
         $this->created_at = $row['created_at'];
     }
 
-    /**
-     * @return array(User)
-     */
     public static function getAll()
     {
         $pdo = PDOFactory::create();
