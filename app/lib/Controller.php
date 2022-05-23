@@ -64,16 +64,16 @@ abstract class Controller
     protected function view(Request $request, string $dir, string $name)
     {
         $is_authenticated = $request->isAuthenticated();
-        $data = array_merge($this->data, array(
-            'is_authenticated' => $is_authenticated,
-            'current_user' => $is_authenticated ? User::getById($request->getSession('user_id')) : null,
-        ));
-        unset($is_authenticated);
+        $this->addData('is_authenticated', $is_authenticated);
+        $this->addData('current_user', $is_authenticated ? User::getById($request->getSession('user_id')) : null);
+
 
         // CSRF token の生成・セット
         $csrf_token = bin2hex(random_bytes(32));
         $request->setSession('csrf_token', $csrf_token);
         $this->addData('csr_token', $csrf_token);
+
+        $data  = $this->data;
 
         ob_start();
         require_once self::VIEW_BASE_DIR . $dir . $name . '.php';
