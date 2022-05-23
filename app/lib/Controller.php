@@ -71,7 +71,7 @@ abstract class Controller
         // CSRF token の生成・セット
         $csrf_token = bin2hex(random_bytes(32));
         $request->setSession('csrf_token', $csrf_token);
-        $this->addData('csr_token', $csrf_token);
+        $this->addData('csrf_token', $csrf_token);
 
         $data  = $this->data;
 
