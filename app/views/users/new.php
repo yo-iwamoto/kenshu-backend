@@ -4,7 +4,7 @@
 
         <hr class="mb-6">
 
-        <form method="POST" action="/users/" class="flex flex-col gap-8" enctype="multipart/form-data">
+        <form method="POST" action="/users/" class="flex flex-col gap-8 mb-10" enctype="multipart/form-data">
             <div>
                 <label for="name" class="font-bold before:content-['*'] before:text-red-500 before:pr-1">ユーザー名</label>
                 <input id="name" type="text" name="name" placeholder="インターネット太郎"
@@ -36,6 +36,11 @@
             <button type="submit"
                 class="rounded-lg w-40 mx-auto text-white bg-teal-600 hover:bg-teal-500 transition-colors py-2 font-bold text-lg">登録</button>
         </form>
+
+        <p class="text-center">
+            既にアカウントをお持ちの方は<a href="/sessions/new/" class="text-teal-800 hover:underline mx-1">ログイン</a>へ
+        </p>
+
         <script src="/assets/js/preview-image.js"></script>
     </div>
 </div>
