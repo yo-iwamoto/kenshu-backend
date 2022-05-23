@@ -1,8 +1,25 @@
 <?php
+
 use Dotenv\Dotenv;
 
-// autoload
-set_include_path('/var/www/html');
-require_once 'vendor/autoload.php';
+class Initializer
+{
+    public static function initialize()
+    {
+        self::setupAutoload();
+        self::loadEnv();
+    }
 
-Dotenv::CreateImmutable('/var/www/html')->load();
+    private static function setupAutoload()
+    {
+        set_include_path('/var/www/html');
+        require_once 'vendor/autoload.php';
+    }
+
+    private static function loadEnv()
+    {
+        Dotenv::CreateImmutable('/var/www/html')->load();
+    }
+}
+
+Initializer::initialize();
