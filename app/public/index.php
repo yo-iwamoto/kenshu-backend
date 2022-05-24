@@ -48,10 +48,6 @@ class Initializer
             '/users' => function () {
                 return new UsersController('users/');
             },
-
-            '/logout' => function () {
-                return new LogoutController('logout/');
-            }
         ));
 
         $request = new Request();

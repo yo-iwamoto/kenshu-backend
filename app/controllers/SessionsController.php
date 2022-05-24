@@ -40,4 +40,11 @@ class SessionsController extends Controller
         // 記事一覧画面へリダイレクト
         return $request->redirect('/posts');
     }
+
+    protected function destroy($request, $_)
+    {
+        $request->unsetSession('user_id');
+
+        return $request->redirect('/');
+    }
 }
