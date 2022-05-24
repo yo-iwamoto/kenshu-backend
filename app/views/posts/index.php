@@ -39,7 +39,7 @@
             <h1 class="mb-8 text-lg">記事一覧</h1>
             <div class="flex justify-around flex-wrap flex-grow gap-8">
 
-                <?php foreach ($data['posts'] as $post) { ?>
+                <?php foreach ($data['posts'] as $post) : ?>
                 <a href="/posts/<?= $post->id ?>/"
                     class="block w-80">
                     <div class="col-span-1 rounded-lg p-4 shadow-lg hover:shadow-md">
@@ -59,7 +59,7 @@
                         </p>
                     </div>
                 </a>
-                <?php } ?>
+                <?php endforeach ?>
             </div>
         </section>
     </div>
