@@ -11,18 +11,29 @@
         <h1 class="font-bold text-3xl mb-4">
             <?= $post->title ?>
         </h1>
-        <p class="flex items-center mb-1">
-            <img class="h-5 w-5 rounded-full mr-1"
-                src="<?= $post->user_profile_image_url ?>"
-                alt="<?= $post->user_name ?>">
-            <span class="text-gray-600 text-sm">
-                <?= $post->user_name ?>
-            </span>
-        </p>
-        <p class="text-sm">
-            <span>作成日時: </span>
-            <span><?= date_format(new DateTime($post->created_at), 'Y-m-d H:i:s') ?></span>
-        </p>
+
+        <div class="flex justify-between items-end">
+            <div>
+                <p class="flex items-center mb-1">
+                    <img class="h-5 w-5 rounded-full mr-1"
+                        src="<?= $post->user_profile_image_url ?>"
+                        alt="<?= $post->user_name ?>">
+                    <span class="text-gray-600 text-sm">
+                        <?= $post->user_name ?>
+                    </span>
+                </p>
+                <p class="text-sm">
+                    <span>作成日時: </span>
+                    <span><?= date_format(new DateTime($post->created_at), 'Y-m-d H:i:s') ?></span>
+                </p>
+            </div>
+
+            <a class="before:absolute before:right-16 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['編集'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"
+                href="/posts/<?= $post->id ?>/edit/">
+                <img class="h-10 w-10" src="/assets/img/edit.png">
+            </a>
+        </div>
+
         <hr class="mt-4 pb-10">
 
         <p>
