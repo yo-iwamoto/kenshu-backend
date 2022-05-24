@@ -2,6 +2,7 @@
 namespace App\models;
 
 use App\lib\PDOFactory;
+use PDO;
 use PDOException;
 
 class Post
@@ -38,10 +39,16 @@ class Post
         try {
             $pdo = PDOFactory::create();
                 
-            $statement = $pdo->prepare('INSERT INTO posts (user_id, title, content, created_at) VALUES (?, ?, ?, NOW())');
-            $statement->bindParam(1, $user_id);
-            $statement->bindParam(2, $title);
-            $statement->bindParam(3, $content);
+            $statement = $pdo->prepare(
+                'INSERT INTO posts
+                    (user_id, title, content, created_at)
+                VALUES
+                    (:user_id, :title, :content, NOW())
+                '
+            );
+            $statement->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $statement->bindParam(':title', $title);
+            $statement->bindParam(':content', $content);
     
             $statement->execute();
         } catch (PDOException $err) {
@@ -87,11 +94,11 @@ class Post
             FROM posts
                 INNER JOIN users ON posts.user_id = users.id
                 LEFT JOIN post_images ON post_images.id = posts.id
-            WHERE posts.id = ?
+            WHERE posts.id = :id
             LIMIT 1;
         '
         );
-        $statement->bindParam(1, $id);
+        $statement->bindParam(':id', $id, PDO::PARAM_INT);
         $statement->execute();
 
         $result = $statement->fetch();
