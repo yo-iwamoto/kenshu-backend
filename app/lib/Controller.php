@@ -5,6 +5,7 @@ namespace App\lib;
 use App\lib\Request;
 use App\models\User;
 use App\views\ApplicationView;
+use Exception;
 
 abstract class Controller
 {
@@ -88,6 +89,10 @@ abstract class Controller
     {
         $this->beforeAction($request);
 
+        if ($request->method === 'POST' || $request->method === 'PUT') {
+            self::validateCsrfToken($request);
+        }
+
         // 静的なルート
         switch ([$request->method, $inner_path]) {
             case ['GET', '/']:
@@ -127,6 +132,13 @@ abstract class Controller
             case 'DELETE':
                 $this->destroy($request, $id);
                 $this->view($request, $this->view_dir, 'index');
+        }
+    }
+
+    public static function validateCsrfToken(Request $request)
+    {
+        if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
+            throw new Exception('csrf check failed');
         }
     }
 }

@@ -9,6 +9,9 @@
             </div>
             <form id="js-toggle-body" class="flex flex-col h-auto gap-8 overflow-hidden origin-top transition-all"
                 action="/posts/" method="POST">
+                <input type="hidden" name="csrf_token"
+                    value="<?= $data['csrf_token'] ?>" />
+
                 <div>
                     <label for="title" class="font-bold before:content-['*'] before:text-red-500 before:pr-1">タイトル<small
                             class="pl-2">(最大100文字)</small></label>
