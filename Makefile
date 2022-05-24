@@ -13,4 +13,5 @@ migrate-all:
 .PHONY: seed
 seed:
 	./scripts/execute_sql.sh fixtures/create_user.sql \
+	&& ./scripts/execute_sql.sh fixtures/create_tags.sql \
 	&& ./scripts/execute_sql.sh fixtures/create_posts.sql
