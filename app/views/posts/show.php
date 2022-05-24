@@ -28,10 +28,27 @@
                 </p>
             </div>
 
-            <a class="before:absolute before:right-16 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['編集'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"
-                href="/posts/<?= $post->id ?>/edit/">
-                <img class="h-10 w-10" src="/assets/img/edit.png">
-            </a>
+            <div class="flex items-start gap-4">
+                <form class="relative"
+                    action="/posts/<?= $post->id ?>/" method="POST">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="csrf_token"
+                        value="<?= $data['csrf_token'] ?>">
+
+                    <button
+                        class="before:absolute before:-right-0.5 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['削除'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"
+                        type="submit">
+                        <img class="h-10 w-10" src="/assets/img/trash.png">
+                    </button>
+                </form>
+
+                <span class="relative">
+                    <a class="before:absolute before:-right-0.5 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['編集'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"
+                        href="/posts/<?= $post->id ?>/edit/">
+                        <img class="h-10 w-10" src="/assets/img/edit.png">
+                    </a>
+                </span>
+            </div>
         </div>
 
         <hr class="mt-4 pb-10">
