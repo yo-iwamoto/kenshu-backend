@@ -20,10 +20,3 @@ make seed
 email: sample@example.com
 password: password
 ```
-
-## マイグレーション
-```
-vim db/data/yyyymmddhhmm_xxx.sql
-
-./scripts/execute_sql.sh migrations/<filename>
-```
