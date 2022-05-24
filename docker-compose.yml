@@ -19,6 +19,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
       - ./db/migrations:/var/lib/postgresql/migrations
+      - ./db/fixtures:/var/lib/postgresql/fixtures
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_DEV_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DEV_DATABASE}

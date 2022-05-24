@@ -4,90 +4,141 @@ namespace App\lib;
 
 use App\lib\Request;
 use App\models\User;
+use App\views\ApplicationView;
+use Exception;
 
-/**
- * コントローラーのベースクラス
- * 必要に応じて、preHandle、get等を定義し、handle を呼ぶとメソッドによって処理を行う。
- * @todo 統一されたインターフェースでビューに値を渡す
- */
 abstract class Controller
 {
     const VIEW_BASE_DIR = 'app/views/';
-    
-    protected Request $request;
-    
-    public function __construct(
-    ) {
-        $this->request = new Request();
+
+    // テンプレートに渡される値
+    protected array $data = [];
+
+    protected function addData(string $key, mixed $value)
+    {
+        $this->data = array_merge($this->data, array($key => $value));
     }
 
-    protected function preHandle(Request $request)
+    public function __construct(private string $view_dir)
     {
     }
 
-    protected function get(Request $request)
+    private function logAndReturn404(Request $request)
     {
-        return http_response_code(404);
-    }
-    protected function post(Request $request)
-    {
-        return http_response_code(404);
-    }
-    protected function patch(Request $request)
-    {
-        return http_response_code(404);
-    }
-    protected function put(Request $request)
-    {
-        return http_response_code(404);
-    }
-    protected function destroy(Request $request)
-    {
+        error_log("[{$request->method}] {$request->path}");
         return http_response_code(404);
     }
 
-    public function handle()
+    protected function beforeAction(Request $request)
     {
-        $this->preHandle($this->request);
-        
-        switch ($this->request->method) {
-            case 'GET':
-                $this->get(request: $this->request);
-                break;
-            case 'POST':
-                $this->post(request: $this->request);
-                break;
-            case 'PATCH':
-                $this->patch(request: $this->request);
-                break;
-            case 'PUT':
-                $this->put(request: $this->request);
-                break;
-            case 'DELETE':
-                $this->destroy(request: $this->request);
-                break;
-            default:
-                return http_response_code(404);
-        }
     }
 
-    public function view(string $path, array $data = [])
+    protected function index(Request $request)
     {
-        // 受け取ったデータを変数宣言
-        foreach ($data as $key => $value) {
-            $$key = $value;
-        }
-        // 共通で利用する変数
-        $is_authenticated = $this->request->isAuthenticated();
-        $current_user = $is_authenticated ? User::get_by_id($this->request->getSession('user_id')) : null;
-        
-        $file_path = self::VIEW_BASE_DIR . $path;
+        $this->logAndReturn404($request);
+    }
+    protected function new(Request $request)
+    {
+        $this->logAndReturn404($request);
+    }
+    protected function create(Request $request)
+    {
+        $this->logAndReturn404($request);
+    }
+    protected function show(Request $request, string $id)
+    {
+        $this->logAndReturn404($request);
+    }
+    protected function edit(Request $request, string $id)
+    {
+        $this->logAndReturn404($request);
+    }
+    protected function update(Request $request, string $id)
+    {
+        $this->logAndReturn404($request);
+    }
+    protected function destroy(Request $request, string $id)
+    {
+        $this->logAndReturn404($request);
+    }
+
+    protected function view(Request $request, string $dir, string $name)
+    {
+        $is_authenticated = $request->isAuthenticated();
+        $this->addData('is_authenticated', $is_authenticated);
+        $this->addData('current_user', $is_authenticated ? User::getById($request->getSession('user_id')) : null);
+
+
+        // CSRF token の生成・セット
+        $csrf_token = bin2hex(random_bytes(32));
+        $request->setSession('csrf_token', $csrf_token);
+        $this->addData('csrf_token', $csrf_token);
+
+        $data  = $this->data;
 
         ob_start();
-        require_once $file_path;
+        require_once self::VIEW_BASE_DIR . $dir . $name . '.php';
         $content = ob_get_clean();
 
-        require_once('app/views/application.php');
-        // TODO: データの展開
+        ApplicationView::render($content, $data);
+        exit();
+    }
+
+    // リクエストに従って処理を行い、デフォルトのビューを返す。ビューはコールバック内で view を呼んで上書き可能。
+    public function handle(Request $request, string $inner_path)
+    {
+        $this->beforeAction($request);
+
+        if ($request->method === 'POST' || $request->method === 'PUT') {
+            self::validateCsrfToken($request);
+        }
+
+        // 静的なルート
+        switch ([$request->method, $inner_path]) {
+            case ['GET', '/']:
+                $this->index($request);
+                $this->view($request, $this->view_dir, 'index');
+                break;
+
+            case ['GET', '/new']:
+                $this->new($request);
+                $this->view($request, $this->view_dir, 'new');
+                break;
+
+            case ['POST', '/']:
+                $this->create($request);
+                $this->view($request, $this->view_dir, 'index');
+        }
+
+        // id を含むルート
+        $id = explode('/', $inner_path)[1];
+
+        if (str_contains($inner_path, '/edit')) {
+            $this->edit($request, $id);
+            $this->view($request, $this->view_dir, 'edit');
+        }
+
+        switch ($request->method) {
+            case 'GET':
+                $this->show($request, $id);
+                $this->view($request, $this->view_dir, 'show');
+                break;
+
+            case 'PUT':
+                $this->update($request, $id);
+                $this->view($request, $this->view_dir, 'show');
+                break;
+
+            case 'DELETE':
+                $this->destroy($request, $id);
+                $this->view($request, $this->view_dir, 'index');
+        }
+    }
+
+    public static function validateCsrfToken(Request $request)
+    {
+        if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
+            throw new Exception('csrf check failed');
+        }
     }
 }

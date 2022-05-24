@@ -3,6 +3,7 @@ namespace App\models;
 
 use App\lib\PDOFactory;
 use Exception;
+use PDO;
 
 class User
 {
@@ -40,11 +41,17 @@ class User
 
         try {
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $statement = $pdo->prepare('INSERT INTO users (name, email, password_hash, profile_image_url, created_at) VALUES (?, ?, ?, ?, NOW())');
-            $statement->bindParam(1, $name);
-            $statement->bindParam(2, $email);
-            $statement->bindParam(3, $password_hash);
-            $statement->bindParam(4, $profile_image_url);
+            $statement = $pdo->prepare(
+                'INSERT INTO users
+                    (name, email, password_hash, profile_image_url, created_at)
+                VALUES
+                    (:name, :email, :password_hash, :profile_image_url, NOW())
+                '
+            );
+            $statement->bindParam(':name', $name);
+            $statement->bindParam(':email', $email);
+            $statement->bindParam(':password_hash', $password_hash);
+            $statement->bindParam(':profile_image_url', $profile_image_url);
 
             $statement->execute();
         } catch (PDOException $err) {
@@ -63,11 +70,11 @@ class User
      * @return User
      * @todo 存在しない email で壊れるのを修正
      */
-    public static function get_by_email(string $email)
+    public static function getByEmail(string $email)
     {
         $pdo = PDOFactory::create();
-        $statement = $pdo->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
-        $statement->bindParam(1, $email);
+        $statement = $pdo->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
+        $statement->bindParam(':email', $email);
         if (!$statement) {
             throw new Exception('invalid email');
         }
@@ -88,11 +95,11 @@ class User
      * @return User
      * @todo 存在しない id で壊れるのを修正
      */
-    public static function get_by_id(string $id)
+    public static function getById(string $id)
     {
         $pdo = PDOFactory::create();
-        $statement = $pdo->prepare('SELECT * FROM users WHERE id = ? LIMIT 1');
-        $statement->bindParam(1, $id);
+        $statement = $pdo->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
+        $statement->bindParam(':id', $id);
         if (!$statement) {
             throw new Exception('invalid id');
         }

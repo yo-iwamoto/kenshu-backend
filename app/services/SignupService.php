@@ -17,7 +17,8 @@ class SignupService
             $uploaded_file_path = '/assets/img/users/' . Uuid::uuid4() . '_' . $request->files['profile_image']['name'];
         }
 
-        $profile_image_url = $uploaded_file_path !== null ? $uploaded_file_path : '/assets/img/default-icon.jpg';
+        // アップロードされた画像がない時、デフォルトの画像を設定する
+        $profile_image_url = $uploaded_file_path !== null ? $uploaded_file_path : '/assets/img/default-icon.png';
 
         User::create(
             email: $request->post['email'],
@@ -27,10 +28,10 @@ class SignupService
         );
 
         if ($uploaded_file_path) {
-            move_uploaded_file($request->files['profile_image']['tmp_name'], '../..' . $uploaded_file_path);
+            move_uploaded_file($request->files['profile_image']['tmp_name'], '../public' . $uploaded_file_path);
         }
             
-        $user = User::get_by_email($request->post['email']);
+        $user = User::getByEmail($request->post['email']);
 
         $request->setSession('user_id', $user->id);
 

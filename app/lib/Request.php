@@ -2,6 +2,8 @@
 
 namespace App\lib;
 
+use App\models\User;
+
 /**
  * グローバル定数から Request オブジェクトを作成する
  */
@@ -43,6 +45,18 @@ class Request
     public function unsetSession(string $key)
     {
         unset($_SESSION[$key]);
+    }
+
+    /**
+     * セッションの user_id から User を取得して返す
+     */
+    public function getCurrentUser()
+    {
+        if ($this->isAuthenticated()) {
+            return User::getById($this->getSession('user_id'));
+        } else {
+            return null;
+        }
     }
 
     /**
