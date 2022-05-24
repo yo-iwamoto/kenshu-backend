@@ -5,6 +5,9 @@
         <hr class="mb-6">
 
         <form method="POST" action="/users/" class="flex flex-col gap-8 mb-10" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token"
+                value="<?= $data['csrf_token'] ?>">
+
             <div>
                 <label for="name" class="font-bold before:content-['*'] before:text-red-500 before:pr-1">ユーザー名</label>
                 <input id="name" type="text" name="name" placeholder="インターネット太郎"
