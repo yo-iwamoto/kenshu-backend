@@ -5,6 +5,7 @@ namespace App\lib;
 use App\lib\Request;
 use App\models\User;
 use App\views\ApplicationView;
+use Exception;
 
 abstract class Controller
 {
@@ -64,11 +65,16 @@ abstract class Controller
     protected function view(Request $request, string $dir, string $name)
     {
         $is_authenticated = $request->isAuthenticated();
-        $data = array_merge($this->data, array(
-            'is_authenticated' => $is_authenticated,
-            'current_user' => $is_authenticated ? User::getById($request->getSession('user_id')) : null,
-        ));
-        unset($is_authenticated);
+        $this->addData('is_authenticated', $is_authenticated);
+        $this->addData('current_user', $is_authenticated ? User::getById($request->getSession('user_id')) : null);
+
+
+        // CSRF token の生成・セット
+        $csrf_token = bin2hex(random_bytes(32));
+        $request->setSession('csrf_token', $csrf_token);
+        $this->addData('csrf_token', $csrf_token);
+
+        $data  = $this->data;
 
         ob_start();
         require_once self::VIEW_BASE_DIR . $dir . $name . '.php';
@@ -82,6 +88,10 @@ abstract class Controller
     public function handle(Request $request, string $inner_path)
     {
         $this->beforeAction($request);
+
+        if ($request->method === 'POST' || $request->method === 'PUT') {
+            self::validateCsrfToken($request);
+        }
 
         // 静的なルート
         switch ([$request->method, $inner_path]) {
@@ -122,6 +132,13 @@ abstract class Controller
             case 'DELETE':
                 $this->destroy($request, $id);
                 $this->view($request, $this->view_dir, 'index');
+        }
+    }
+
+    public static function validateCsrfToken(Request $request)
+    {
+        if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
+            throw new Exception('csrf check failed');
         }
     }
 }

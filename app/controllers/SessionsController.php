@@ -18,7 +18,6 @@ class SessionsController extends Controller
 
     protected function new($_)
     {
-        // TODO: CSRF token の生成、データ格納
     }
 
     protected function create($request)

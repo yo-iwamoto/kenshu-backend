@@ -14,7 +14,7 @@ class ApplicationView
 <?php partials\Head::render() ?>
 
 <body>
-    <?php partials\Header::render($data['is_authenticated']) ?>
+    <?php partials\Header::render($data['is_authenticated'], csrf_token: $data['csrf_token']) ?>
     <main class="font-mono">
         <?php echo $content; ?>
     </main>

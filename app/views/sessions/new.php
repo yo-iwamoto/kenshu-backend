@@ -4,7 +4,10 @@
 
         <hr class="mb-6">
 
-        <form method="POST" action="/sessions/" class="flex flex-col gap-8" enctype="multipart/form-data">
+        <form method="POST" action="/sessions/" class="flex flex-col gap-8 mb-10" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token"
+                value="<?= $data['csrf_token'] ?>">
+
             <div>
                 <label for="email" class="font-bold">メールアドレス</label>
                 <input id="email" type="email" name="email" placeholder="sample@example.com"
@@ -20,5 +23,9 @@
             <button type="submit"
                 class="rounded-lg w-40 mx-auto text-white bg-teal-600 hover:bg-teal-500 transition-colors py-2 font-bold text-lg">登録</button>
         </form>
+
+        <p class="text-center">
+            初めての方は<a href="/users/new/" class="text-teal-800 hover:underline mx-1">新規登録</a>へ
+        </p>
     </div>
 </div>
