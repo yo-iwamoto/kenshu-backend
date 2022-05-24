@@ -54,4 +54,11 @@ class PostsController extends Controller
         
         $request->redirect("/posts/$id/");
     }
+
+    protected function destroy($request, $id)
+    {
+        Post::getById($id)->destroy();
+
+        $request->redirect('/posts/');
+    }
 }

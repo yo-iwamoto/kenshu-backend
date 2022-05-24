@@ -128,4 +128,15 @@ class Post
         $statement->bindParam(':content', $content);
         $statement->execute();
     }
+
+    public function destroy()
+    {
+        $post_id = $this->id;
+        
+        $pdo = PDOFactory::create();
+
+        $statement = $pdo->prepare('DELETE FROM posts WHERE id = :id');
+        $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
+        $statement->execute();
+    }
 }
