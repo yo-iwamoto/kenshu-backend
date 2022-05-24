@@ -39,6 +39,14 @@
             <h1 class="mb-8 text-lg">記事一覧</h1>
             <div class="flex justify-around flex-wrap flex-grow gap-8">
 
+                <?php if (count($data['posts']) === 0)  :?>
+
+                <div class="text-center">
+                    <p>まだ記事がないようです…🤔</p>
+                    <p>上のフォームから何か書いてみましょう</p>
+                </div>
+
+                <?php else : ?>
                 <?php foreach ($data['posts'] as $post) : ?>
                 <a href="/posts/<?= $post->id ?>/"
                     class="block w-80">
@@ -77,6 +85,8 @@
                     </div>
                 </a>
                 <?php endforeach ?>
+
+                <?php endif?>
             </div>
         </section>
     </div>

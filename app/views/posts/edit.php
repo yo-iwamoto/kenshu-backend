@@ -31,16 +31,20 @@
                     </p>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <a href="/posts/<?= $post->id ?>/"
-                        class="before:absolute before:right-32 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['キャンセル'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block">
-                        <img class="h-10 w-10" src="/assets/img/cancel.png">
-                    </a>
+                <div class="flex items-start gap-4">
+                    <span class="relative">
+                        <a href="/posts/<?= $post->id ?>/"
+                            class="before:absolute before:-right-0.5 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['キャンセル'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block">
+                            <img class="h-10 w-10" src="/assets/img/cancel.png">
+                        </a>
+                    </span>
 
-                    <button type="submit"
-                        class="before:absolute before:right-16 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['保存'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"">
-                    <img class=" h-10 w-10" src="/assets/img/save.png">
-                    </button>
+                    <span class="relative">
+                        <button type="submit"
+                            class="before:absolute before:-right-0.5 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['保存'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block">
+                            <img class=" h-10 w-10" src="/assets/img/save.png">
+                        </button>
+                    </span>
                 </div>
             </div>
 
