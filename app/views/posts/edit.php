@@ -1,4 +1,7 @@
-<?php $post = $data['post'] ?>
+<?php
+$post = $data['post'];
+
+?>
 
 <div class="mt-10 mx-8">
     <div class="max-w-5xl mx-auto">
@@ -16,14 +19,43 @@
                     required>
             </div>
 
+            <div class="inline-block relative w-full mb-8">
+                <label class="block" for="tags" class="font-bold">タグ<small class="pl-2">(任意, 複数選択可)</small></label>
+                <select id="tags" name="tags[]" multiple
+                    class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg shadow-lg leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="general" <?= in_array('general', $data['tag_ids']) ? 'selected' : '' ?>>総合
+                    </option>
+                    <option value="technology" <?= in_array('technology', $data['tag_ids']) ? 'selected' : '' ?>>テクノロジー
+                    </option>
+                    <option value="mobile" <?= in_array('mobile', $data['tag_ids']) ? 'selected' : '' ?>>モバイル
+                    </option>
+                    <option value="app" <?= in_array('app', $data['tag_ids']) ? 'selected' : '' ?>>アプリ
+                    </option>
+                    <option value="entertainment" <?= in_array('entertainment', $data['tag_ids']) ? 'selected' : '' ?>>エンタメ
+                    </option>
+                    <option value="beauty" <?= in_array('beauty', $data['tag_ids']) ? 'selected' : '' ?>>ビューティー
+                    </option>
+                    <option value="fashion" <?= in_array('fashion', $data['tag_ids']) ? 'selected' : '' ?>>ファッション
+                    </option>
+                    <option value="life_style" <?= in_array('life_style', $data['tag_ids']) ? 'selected' : '' ?>>ライフスタイル
+                    </option>
+                    <option value="business" <?= in_array('business', $data['tag_ids']) ? 'selected' : '' ?>>ビジネス
+                    </option>
+                    <option value="gourmet" <?= in_array('gourmet', $data['tag_ids']) ? 'selected' : '' ?>>グルメ
+                    </option>
+                    <option value="sports" <?= in_array('sports', $data['tag_ids']) ? 'selected' : '' ?>>スポーツ
+                    </option>
+                </select>
+            </div>
+
             <div class="flex justify-between items-end">
                 <div>
                     <p class="flex items-center mb-1">
                         <img class="h-5 w-5 rounded-full mr-1"
-                            src="<?= $post->user_profile_image_url ?>"
-                            alt="<?= htmlspecialchars($post->user_name) ?>">
+                            src="<?= $post->user__profile_image_url ?>"
+                            alt="<?= htmlspecialchars($post->user__name) ?>">
                         <span class="text-gray-600 text-sm">
-                            <?= htmlspecialchars($post->user_name) ?>
+                            <?= htmlspecialchars($post->user__name) ?>
                         </span>
                     </p>
                     <p class="text-sm">

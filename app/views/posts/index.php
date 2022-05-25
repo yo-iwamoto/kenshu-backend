@@ -26,6 +26,24 @@
                         class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required></textarea>
                 </div>
 
+                <div class="inline-block relative w-full">
+                    <label class="block" for="tags" class="font-bold">タグ<small class="pl-2">(任意, 複数選択可)</small></label>
+                    <select id="tags" name="tags[]" multiple
+                        class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg shadow-lg leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="general">総合</option>
+                        <option value="technology">テクノロジー</option>
+                        <option value="mobile">モバイル</option>
+                        <option value="app">アプリ</option>
+                        <option value="entertainment">エンタメ</option>
+                        <option value="beauty">ビューティー</option>
+                        <option value="fashion">ファッション</option>
+                        <option value="life_style">ライフスタイル</option>
+                        <option value="business">ビジネス</option>
+                        <option value="gourmet">グルメ</option>
+                        <option value="sports">スポーツ</option>
+                    </select>
+                </div>
+
                 <div class="flex justify-end">
                     <button type="submit"
                         class="rounded-lg w-16 text-white bg-teal-600 hover:bg-teal-500 transition-colors py-2 text-sm font-bold">投稿</button>
@@ -35,7 +53,7 @@
 
         <hr class="mb-6">
 
-        <section>
+        <section class="mb-20">
             <h1 class="mb-8 text-lg">記事一覧</h1>
             <div class="flex justify-around flex-wrap flex-grow gap-8">
 
@@ -49,7 +67,7 @@
                 <?php else : ?>
                 <?php foreach ($data['posts'] as $post) : ?>
                 <a href="/posts/<?= $post->id ?>/"
-                    class="block w-80">
+                    class="block w-64">
                     <div class="col-span-1 rounded-lg p-4 shadow-lg hover:shadow-md">
                         <img class="h-20 w-20"
                             src="/<?= $post->thumbnail_url ?>"
@@ -60,10 +78,10 @@
                         <div class="flex justify-between items-end">
                             <p class="flex items-center">
                                 <img class="h-5 w-5 rounded-full mr-1"
-                                    src="<?= $post->user_profile_image_url ?>"
-                                    alt="<?= htmlspecialchars($post->user_name) ?>">
+                                    src="<?= $post->user__profile_image_url ?>"
+                                    alt="<?= htmlspecialchars($post->user__name) ?>">
                                 <span class="text-xs text-gray-600">
-                                    <?= htmlspecialchars($post->user_name) ?>
+                                    <?= htmlspecialchars($post->user__name) ?>
                                 </span>
 
 

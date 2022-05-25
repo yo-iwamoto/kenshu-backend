@@ -5,7 +5,6 @@ use App\lib\Router;
 use Dotenv\Dotenv;
 
 use App\controllers\HomeController;
-use App\controllers\LogoutController;
 use App\controllers\PostsController;
 use App\controllers\SessionsController;
 use App\controllers\UsersController;

@@ -2,6 +2,7 @@
 namespace App\models;
 
 use App\lib\PDOFactory;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -10,25 +11,30 @@ class Post
     const NO_IMAGE_URL = 'assets/img/no-img.jpeg';
     
     public readonly string $id;
-    public readonly string  $user_id;
-    public readonly string  $user_name;
-    public readonly string  $user_profile_image_url;
     public readonly string $thumbnail_url;
     public readonly string $title;
     public readonly string $content;
     public readonly string $created_at;
 
+    // TODO: User で管理する
+    public readonly string $user__name;
+    public readonly string $user__profile_image_url;
+
+    // tag がない [] の状態と区別するため null
+    public ?array $tags = null;
+
     private function __construct(array $row)
     {
         $this->id = $row['id'];
-        $this->user_id = $row['user_id'];
-        $this->user_name = $row['user_name'];
-        $this->user_profile_image_url = $row['user_profile_image_url'];
         // thumbnail_url は nullable のため、null のとき専用の画像の URL を指定する
         $this->thumbnail_url = $row['thumbnail_url'] ?? self::NO_IMAGE_URL;
         $this->title = $row['title'];
         $this->content = $row['content'];
         $this->created_at = $row['created_at'];
+
+        // TODO: User で管理する
+        $this->user__name = $row['user__name'];
+        $this->user__profile_image_url = $row['user__profile_image_url'];
     }
 
     public static function create(
@@ -44,6 +50,7 @@ class Post
                     (user_id, title, content, created_at)
                 VALUES
                     (:user_id, :title, :content, NOW())
+                RETURNING *;
                 '
             );
             $statement->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -51,6 +58,8 @@ class Post
             $statement->bindParam(':content', $content);
     
             $statement->execute();
+
+            return $statement->fetch()['id'];
         } catch (PDOException $err) {
             print_r($err);
             throw Exception('failed adding data');
@@ -65,8 +74,8 @@ class Post
         $statement = $pdo->query(
             'SELECT
                 posts.*,
-                users.name AS user_name,
-                users.profile_image_url AS user_profile_image_url,
+                users.name AS user__name,
+                users.profile_image_url AS user__profile_image_url,
                 post_images.image_url AS thumbnail_post_image_url
             FROM posts
                 INNER JOIN users ON posts.user_id = users.id
@@ -88,8 +97,8 @@ class Post
         $statement = $pdo->prepare(
             'SELECT
                 posts.*,
-                users.name AS user_name,
-                users.profile_image_url AS user_profile_image_url,
+                users.name AS user__name,
+                users.profile_image_url AS user__profile_image_url,
                 post_images.image_url AS thumbnail_post_image_url
             FROM posts
                 INNER JOIN users ON posts.user_id = users.id
@@ -138,5 +147,10 @@ class Post
         $statement = $pdo->prepare('DELETE FROM posts WHERE id = :id');
         $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
         $statement->execute();
+    }
+
+    public function getTags()
+    {
+        $this->tags = Tag::getAllByPostId($this->id);
     }
 }

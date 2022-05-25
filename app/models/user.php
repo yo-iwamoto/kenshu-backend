@@ -3,7 +3,6 @@ namespace App\models;
 
 use App\lib\PDOFactory;
 use Exception;
-use PDO;
 
 class User
 {
