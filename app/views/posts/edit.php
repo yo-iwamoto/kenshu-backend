@@ -12,7 +12,8 @@
                         class="pl-2">(最大100文字)</small></label>
                 <input id="title" type="text" name="title" placeholder=""
                     class="border-gray-400 text-2xl font-bold w-full shadow-lg border rounded-lg bg-light-800 p-2"
-                    value="<?= $post->title ?>" required>
+                    value="<?= htmlspecialchars($post->title) ?>"
+                    required>
             </div>
 
             <div class="flex justify-between items-end">
@@ -20,9 +21,9 @@
                     <p class="flex items-center mb-1">
                         <img class="h-5 w-5 rounded-full mr-1"
                             src="<?= $post->user_profile_image_url ?>"
-                            alt="<?= $post->user_name ?>">
+                            alt="<?= htmlspecialchars($post->user_name) ?>">
                         <span class="text-gray-600 text-sm">
-                            <?= $post->user_name ?>
+                            <?= htmlspecialchars($post->user_name) ?>
                         </span>
                     </p>
                     <p class="text-sm">

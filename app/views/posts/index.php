@@ -53,17 +53,17 @@
                     <div class="col-span-1 rounded-lg p-4 shadow-lg hover:shadow-md">
                         <img class="h-20 w-20"
                             src="/<?= $post->thumbnail_url ?>"
-                            alt="<?= $post->title ?>">
+                            alt="<?= htmlspecialchars($post->title) ?>">
                         <p class="font-bold text-lg mb-2">
-                            <?= $post->title ?>
+                            <?= htmlspecialchars($post->title) ?>
                         </p>
                         <div class="flex justify-between items-end">
                             <p class="flex items-center">
                                 <img class="h-5 w-5 rounded-full mr-1"
                                     src="<?= $post->user_profile_image_url ?>"
-                                    alt="<?= $post->user_name ?>">
+                                    alt="<?= htmlspecialchars($post->user_name) ?>">
                                 <span class="text-xs text-gray-600">
-                                    <?= $post->user_name ?>
+                                    <?= htmlspecialchars($post->user_name) ?>
                                 </span>
 
 
