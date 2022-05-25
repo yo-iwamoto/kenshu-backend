@@ -37,4 +37,28 @@ class PostsController extends Controller
 
         $request->redirect('/posts');
     }
+
+    protected function edit($request, $id)
+    {
+        $post = Post::getById($id);
+
+        $this->addData('post', $post);
+    }
+
+    protected function update($request, $id)
+    {
+        Post::getById($id)->update(
+            title: $request->post['title'],
+            content: $request->post['content'],
+        );
+        
+        $request->redirect("/posts/$id/");
+    }
+
+    protected function destroy($request, $id)
+    {
+        Post::getById($id)->destroy();
+
+        $request->redirect('/posts/');
+    }
 }

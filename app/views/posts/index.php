@@ -39,27 +39,54 @@
             <h1 class="mb-8 text-lg">記事一覧</h1>
             <div class="flex justify-around flex-wrap flex-grow gap-8">
 
+                <?php if (count($data['posts']) === 0)  :?>
+
+                <div class="text-center">
+                    <p>まだ記事がないようです…🤔</p>
+                    <p>上のフォームから何か書いてみましょう</p>
+                </div>
+
+                <?php else : ?>
                 <?php foreach ($data['posts'] as $post) : ?>
                 <a href="/posts/<?= $post->id ?>/"
                     class="block w-80">
                     <div class="col-span-1 rounded-lg p-4 shadow-lg hover:shadow-md">
                         <img class="h-20 w-20"
                             src="/<?= $post->thumbnail_url ?>"
-                            alt="<?= $post->title ?>">
+                            alt="<?= htmlspecialchars($post->title) ?>">
                         <p class="font-bold text-lg mb-2">
-                            <?= $post->title ?>
+                            <?= htmlspecialchars($post->title) ?>
                         </p>
-                        <p class="flex items-center">
-                            <img class="h-5 w-5 rounded-full mr-1"
-                                src="<?= $post->user_profile_image_url ?>"
-                                alt="<?= $post->user_name ?>">
-                            <span class="text-xs text-gray-600">
-                                <?= $post->user_name ?>
-                            </span>
-                        </p>
+                        <div class="flex justify-between items-end">
+                            <p class="flex items-center">
+                                <img class="h-5 w-5 rounded-full mr-1"
+                                    src="<?= $post->user_profile_image_url ?>"
+                                    alt="<?= htmlspecialchars($post->user_name) ?>">
+                                <span class="text-xs text-gray-600">
+                                    <?= htmlspecialchars($post->user_name) ?>
+                                </span>
+
+
+                            </p>
+                            <form class="relative"
+                                action="/posts/<?= $post->id ?>/"
+                                method="POST">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="csrf_token"
+                                    value="<?= $data['csrf_token'] ?>">
+
+                                <button
+                                    class="before:absolute before:-right-1/2 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['削除'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"
+                                    type="submit">
+                                    <img class="h-6 w-6" src="/assets/img/trash.png">
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </a>
                 <?php endforeach ?>
+
+                <?php endif?>
             </div>
         </section>
     </div>

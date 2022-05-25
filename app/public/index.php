@@ -54,7 +54,18 @@ class Initializer
             }
         ));
 
-        $router->resolve(request: new Request());
+        $request = new Request();
+
+        // クエリを見て $request->method　を更新することで、手動で PUT と DELETE に対応
+        if (isset($request->post['_method'])) {
+            if ($request->post['_method'] === 'PUT') {
+                $request->updateMethodManually('PUT');
+            } elseif ($request->post['_method'] === 'DELETE') {
+                $request->updateMethodManually('DELETE');
+            }
+        }
+
+        $router->resolve($request);
     }
 }
 

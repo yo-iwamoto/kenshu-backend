@@ -16,7 +16,7 @@ class Request
     public readonly ?array $session;
     public readonly ?array $request;
 
-    public readonly string $method;
+    public string $method;
     public readonly string $path;
 
     public function __construct(
@@ -45,6 +45,14 @@ class Request
     public function unsetSession(string $key)
     {
         unset($_SESSION[$key]);
+    }
+
+    /**
+     * PUT と DELETE を利用するためやむなく生やしている。
+     */
+    public function updateMethodManually(string $method)
+    {
+        $this->method = $method;
     }
 
     /**

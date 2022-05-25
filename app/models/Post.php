@@ -108,4 +108,35 @@ class Post
         }
         return new Post($result);
     }
+
+    public function update(string $title, string $content)
+    {
+        $post_id = $this->id;
+        
+        $pdo = PDOFactory::create();
+
+        $statement = $pdo->prepare(
+            'UPDATE posts
+            SET
+                title = :title,
+                content = :content
+            WHERE id = :id
+        '
+        );
+        $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
+        $statement->bindParam(':title', $title);
+        $statement->bindParam(':content', $content);
+        $statement->execute();
+    }
+
+    public function destroy()
+    {
+        $post_id = $this->id;
+        
+        $pdo = PDOFactory::create();
+
+        $statement = $pdo->prepare('DELETE FROM posts WHERE id = :id');
+        $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
+        $statement->execute();
+    }
 }
