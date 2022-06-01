@@ -24,9 +24,9 @@ class ServerException extends Exception
         return new self(ServerExceptionName::INTERNAL, $display_text, $inner);
     }
 
-    public static function alreadyExists(?Exception $inner = null, ?string $display_text = null): self
+    public static function emailAlreadyExists(?Exception $inner = null, ?string $display_text = null): self
     {
-        return new self(ServerExceptionName::ALREADY_EXISTS, $display_text, $inner);
+        return new self(ServerExceptionName::EMAIL_ALREADY_EXISTS, $display_text, $inner);
     }
 
     public static function database(?Exception $inner = null, ?string $display_text = null): self

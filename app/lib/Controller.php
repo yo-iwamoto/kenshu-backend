@@ -5,6 +5,7 @@ namespace App\lib;
 use App\lib\Request;
 use App\models\User;
 use App\views\ApplicationView;
+use Closure;
 use Exception;
 
 abstract class Controller
@@ -96,17 +97,17 @@ abstract class Controller
         // 静的なルート
         switch ([$request->method, $inner_path]) {
             case ['GET', '/']:
-                $this->index($request);
+                $this->execAction(fn () => $this->index($request));
                 $this->view($request, $this->view_dir, 'index');
                 break;
 
             case ['GET', '/new']:
-                $this->new($request);
+                $this->execAction(fn () => $this->new($request));
                 $this->view($request, $this->view_dir, 'new');
                 break;
 
             case ['POST', '/']:
-                $this->create($request);
+                $this->execAction(fn () => $this->create($request));
                 $this->view($request, $this->view_dir, 'index');
         }
 
@@ -114,23 +115,23 @@ abstract class Controller
         $id = explode('/', $inner_path)[1];
 
         if (str_contains($inner_path, '/edit')) {
-            $this->edit($request, $id);
+            $this->execAction(fn () => $this->edit($request, $id));
             $this->view($request, $this->view_dir, 'edit');
         }
 
         switch ($request->method) {
             case 'GET':
-                $this->show($request, $id);
+                $this->execAction(fn () => $this->show($request, $id));
                 $this->view($request, $this->view_dir, 'show');
                 break;
 
             case 'PUT':
-                $this->update($request, $id);
+                $this->execAction(fn () => $this->update($request, $id));
                 $this->view($request, $this->view_dir, 'show');
                 break;
 
             case 'DELETE':
-                $this->destroy($request, $id);
+                $this->execAction(fn () => $this->destroy($request, $id));
                 $this->view($request, $this->view_dir, 'index');
         }
     }
@@ -139,6 +140,40 @@ abstract class Controller
     {
         if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
             throw new Exception('csrf check failed');
+        }
+    }
+
+    /**
+     * callback を実行し、発生した例外を処理する
+     */
+    private function execAction(Closure $callback)
+    {
+        try {
+            $callback();
+        } catch (Exception $exception) {
+            $this->handleException($exception);
+        }
+    }
+
+    private function handleException(Exception $exception)
+    {
+        if ($exception instanceof ServerException) {
+            if ($exception->display_text !== null) {
+                $this->addData('error_message', $exception->display_text);
+            } else {
+                switch ($exception->name) {
+                        case ServerExceptionName::NO_SUCH_RECORD:
+                            $this->addData('error_message', 'データが存在していません');
+                            break;
+                        case ServerExceptionName::INTERNAL:
+                            $this->addData('error_message', 'エラーが発生しました。時間をおいて再度お試しください');
+                            break;
+                        default:
+                        $this->addData('error_message', '不明なエラーが発生しました');
+                    }
+            }
+        } else {
+            $this->addData('error_message', '不明なエラーが発生しました');
         }
     }
 }

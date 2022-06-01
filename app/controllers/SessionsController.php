@@ -2,7 +2,9 @@
 namespace App\controllers;
 
 use App\lib\Controller;
+use App\lib\ServerException;
 use App\models\User;
+use Exception;
 
 class SessionsController extends Controller
 {
@@ -22,23 +24,25 @@ class SessionsController extends Controller
 
     protected function create($request)
     {
-        // TODO: CSRF token の検証
+        try {
+            $user = User::getByEmail($request->post['email']);
+            if ($user->login($request->post['password'])) {
+                $request->setSession('user_id', $user->id);
 
-        // TODO: バリデーション
+                return $request->redirect('/');
+            } else {
+                throw ServerException::invalidRequest();
+            }
 
-        $user = User::getByEmail($request->post['email']);
-        if ($user->login($request->post['password'])) {
-            $request->setSession('user_id', $user->id);
 
-            return $request->redirect('/');
-        } else {
-            // TODO: エラーのフィードバック
+            // 記事一覧画面へリダイレクト
+            return $request->redirect('/posts');
+        } catch (Exception $_) {
+            // NO_SUCH_RECORD はユーザーに伝えない
+            $this->addData('error_message', 'ログインに失敗しました。再度お試しください');
+            
             $this->view($request, self::VIEW_DIR, 'new');
         }
-
-
-        // 記事一覧画面へリダイレクト
-        return $request->redirect('/posts');
     }
 
     protected function destroy($request, $_)

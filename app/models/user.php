@@ -58,7 +58,7 @@ class User
         } catch (Exception $exception) {
             if ($exception instanceof PDOException) {
                 if ($exception->getCode() === '23505') {
-                    throw ServerException::alreadyExists($exception);
+                    throw ServerException::emailAlreadyExists($exception);
                 }
 
                 throw ServerException::database($exception);
