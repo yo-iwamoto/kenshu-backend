@@ -3,6 +3,7 @@ namespace App\controllers;
 
 use App\lib\Controller;
 use App\lib\ServerException;
+use App\lib\ServerExceptionName;
 use App\models\User;
 use Exception;
 
@@ -28,20 +29,21 @@ class SessionsController extends Controller
             $user = User::getByEmail($request->post['email']);
             if ($user->login($request->post['password'])) {
                 $request->setSession('user_id', $user->id);
-
+    
                 return $request->redirect('/');
             } else {
-                throw ServerException::invalidRequest();
+                throw ServerException::invalidRequest(display_text: 'ログインに失敗しました。再度お試しください');
             }
-
-
+    
+    
             // 記事一覧画面へリダイレクト
             return $request->redirect('/posts');
-        } catch (Exception $_) {
-            // NO_SUCH_RECORD はユーザーに伝えない
-            $this->addData('error_message', 'ログインに失敗しました。再度お試しください');
-            
-            $this->view($request, self::VIEW_DIR, 'new');
+        } catch (Exception $exception) {
+            if ($exception instanceof ServerException && $exception->name === ServerExceptionName::NO_SUCH_RECORD) {
+                $exception->display_text = 'ログインに失敗しました。再度お試しください';
+            }
+
+            throw $exception;
         }
     }
 

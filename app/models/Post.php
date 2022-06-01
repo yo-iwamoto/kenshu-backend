@@ -44,6 +44,8 @@ class Post
         string $title,
         string $content,
     ) {
+        self::validate($title, $content);
+        
         $pdo = PDOFactory::create();
         
         try {
@@ -189,5 +191,33 @@ class Post
     public function getTags()
     {
         $this->tags = Tag::getAllByPostId($this->id);
+    }
+
+    /**
+     * @param array $data クライアントからの入力
+     * @return void
+     * 不正なとき例外を投げる
+     */
+    public static function validate(
+        string $title,
+        string $content,
+    ): void {
+        $errors = [];
+
+        if (strlen($title) === 0) {
+            array_push($errors, 'タイトルは必須項目です');
+        }
+
+        if (strlen($title) > 100) {
+            array_push($errors, 'タイトルは100文字以内で入力してください');
+        }
+
+        if (strlen($content) === 0) {
+            array_push($errors, '本文は必須項目です') ;
+        }
+
+        if (count($errors) !== 0) {
+            throw ServerException::invalidRequest(display_text: join('<br />', $errors));
+        }
     }
 }

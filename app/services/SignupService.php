@@ -2,7 +2,7 @@
 namespace App\services;
 
 use App\lib\Request;
-use App\lib\ServerException;
+use App\services\ValidateUploadedImageService;
 use App\models\User;
 use Ramsey\Uuid\Uuid;
 
@@ -13,7 +13,7 @@ class SignupService
         $uploaded_file_path = null;
 
         if ($request->files['profile_image']['size'] !== 0) {
-            self::verifyUploadedImageFile($request->files['profile_image']);
+            ValidateUploadedImageService::execute($request->files['profile_image']);
             $uploaded_file_path = '/assets/img/users/' . Uuid::uuid4() . '_' . $request->files['profile_image']['name'];
         }
 
@@ -36,22 +36,5 @@ class SignupService
         $request->setSession('user_id', $user->id);
 
         return $user;
-    }
-
-    /**
-     * throws Exception when invalid
-     */
-    private static function verifyUploadedImageFile(array $file)
-    {
-        // ファイル形式の確認
-        $valid_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array(mime_content_type($file['tmp_name']), $valid_types, true)) {
-            throw ServerException::invalidRequest(display_text: '不正なファイル形式です');
-        }
-
-        // 画像サイズの確認
-        if ($file['size'] > 10000000) {
-            throw ServerException::invalidRequest(display_text: 'アップロードできるファイルサイズの上限は10MBです');
-        }
     }
 }

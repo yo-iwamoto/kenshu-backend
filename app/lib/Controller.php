@@ -91,89 +91,96 @@ abstract class Controller
         $this->beforeAction($request);
 
         if ($request->method === 'POST' || $request->method === 'PUT') {
-            self::validateCsrfToken($request);
+            $this->validateCsrfToken($request);
         }
 
         // 静的なルート
         switch ([$request->method, $inner_path]) {
             case ['GET', '/']:
-                $this->execAction(fn () => $this->index($request));
-                $this->view($request, $this->view_dir, 'index');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->index($request),
+                    template: 'index',
+                );
                 break;
 
             case ['GET', '/new']:
-                $this->execAction(fn () => $this->new($request));
-                $this->view($request, $this->view_dir, 'new');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->new($request),
+                    template: 'new',
+                );
                 break;
 
             case ['POST', '/']:
-                $this->execAction(fn () => $this->create($request));
-                $this->view($request, $this->view_dir, 'index');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->create($request),
+                    template: 'index',
+                    error_template: 'new',
+                );
         }
 
         // id を含むルート
         $id = explode('/', $inner_path)[1];
 
         if (str_contains($inner_path, '/edit')) {
-            $this->execAction(fn () => $this->edit($request, $id));
-            $this->view($request, $this->view_dir, 'edit');
+            $this->execAction(
+                $request,
+                callback: fn () => $this->edit($request, $id),
+                template: 'edit',
+            );
         }
 
         switch ($request->method) {
             case 'GET':
-                $this->execAction(fn () => $this->show($request, $id));
-                $this->view($request, $this->view_dir, 'show');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->show($request, $id),
+                    template: 'show',
+                );
                 break;
 
             case 'PUT':
-                $this->execAction(fn () => $this->update($request, $id));
-                $this->view($request, $this->view_dir, 'show');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->update($request, $id),
+                    template: 'show',
+                    error_template: 'edit',
+                );
                 break;
 
             case 'DELETE':
-                $this->execAction(fn () => $this->destroy($request, $id));
-                $this->view($request, $this->view_dir, 'index');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->destroy($request, $id),
+                    template: 'index',
+                    error_template: 'index'
+                );
         }
     }
 
-    public static function validateCsrfToken(Request $request)
+    public function validateCsrfToken(Request $request)
     {
         if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
-            throw new Exception('csrf check failed');
+            $this->addData('http_referer', $request->server['HTTP_REFERER']);
+            $this->view($request, 'utils/', 'csrf_error');
         }
     }
 
     /**
      * callback を実行し、発生した例外を処理する
      */
-    private function execAction(Closure $callback)
+    private function execAction(Request $request, Closure $callback, string $template, ?string $error_template = null)
     {
         try {
             $callback();
-        } catch (Exception $exception) {
-            $this->handleException($exception);
-        }
-    }
 
-    private function handleException(Exception $exception)
-    {
-        if ($exception instanceof ServerException) {
-            if ($exception->display_text !== null) {
-                $this->addData('error_message', $exception->display_text);
-            } else {
-                switch ($exception->name) {
-                        case ServerExceptionName::NO_SUCH_RECORD:
-                            $this->addData('error_message', 'データが存在していません');
-                            break;
-                        case ServerExceptionName::INTERNAL:
-                            $this->addData('error_message', 'エラーが発生しました。時間をおいて再度お試しください');
-                            break;
-                        default:
-                        $this->addData('error_message', '不明なエラーが発生しました');
-                    }
-            }
-        } else {
-            $this->addData('error_message', '不明なエラーが発生しました');
+            $this->view($request, $this->view_dir, $template);
+        } catch (Exception $exception) {
+            $this->addData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
+
+            $this->view($request, $this->view_dir, $error_template !== null ? $error_template : $template);
         }
     }
 }

@@ -4,6 +4,7 @@ namespace App\models;
 use App\lib\ServerException;
 use App\lib\PDOFactory;
 use Exception;
+use PDO;
 use PDOException;
 
 class User
@@ -38,6 +39,8 @@ class User
         string $password,
         string $profile_image_url,
     ) {
+        self::validate($name, $email, $password);
+        
         $pdo = PDOFactory::create();
 
         try {
@@ -72,58 +75,87 @@ class User
      * email の一致するレコードを取得し User で返す
      * @param string $email
      * @return User
-     * @todo 存在しない email で壊れるのを修正
      */
-    public static function getByEmail(string $email)
+    public static function getByEmail(string $email): self
     {
         $pdo = PDOFactory::create();
         $statement = $pdo->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
         $statement->bindParam(':email', $email);
-        if (!$statement) {
-            throw new Exception('invalid email');
-        }
 
         $statement->execute();
 
         $result = $statement->fetch();
 
         if (!$result) {
-            throw new Exception('no such user');
+            throw ServerException::noSuchRecord();
         }
-        return new User($result);
+        return new self($result);
     }
 
     /**
      * id の一致するレコードを取得し User で返す
      * @param string $id
      * @return User
-     * @todo 存在しない id で壊れるのを修正
      */
-    public static function getById(string $id)
+    public static function getById(string $id): self
     {
         $pdo = PDOFactory::create();
         $statement = $pdo->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
-        $statement->bindParam(':id', $id);
-        if (!$statement) {
-            throw new Exception('invalid id');
-        }
+        $statement->bindParam(':id', $id, PDO::PARAM_INT);
 
         $statement->execute();
 
         $result = $statement->fetch();
 
         if (!$result) {
-            throw new Exception('no such user');
+            throw ServerException::noSuchRecord();
         }
-        return new User($result);
+        return new self($result);
     }
 
     /**
      *  @param string $password
      *  @return bool 検証結果
      */
-    public function login(string $password)
+    public function login(string $password): bool
     {
         return password_verify($password, $this->password_hash);
+    }
+
+    /**
+     * @param array $data クライアントからの入力
+     * @return void
+     * 不正なとき例外を投げる
+     */
+    public static function validate(
+        string $name,
+        string $email,
+        string $password,
+    ): void {
+        $errors = [];
+
+        if (strlen($name) === 0) {
+            array_push($errors, 'ユーザー名は必須項目です');
+        }
+
+        if (strlen($name) > 100) {
+            array_push($errors, 'ユーザー名は100文字以内で入力してください');
+        }
+
+        if (strlen($password) === 0) {
+            array_push($errors, 'パスワードは必須項目です') ;
+        }
+
+        if (strlen($password) > 72) {
+            array_push($errors, 'ユーザー名は72文字以内で入力してください');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            array_push($errors, 'メールアドレスの形式が誤っています');
+        }
+
+        if (count($errors) !== 0) {
+            throw ServerException::invalidRequest(display_text: join('<br />', $errors));
+        }
     }
 }

@@ -20,7 +20,7 @@ class ApplicationView
     <div class="px-2">
         <div class="rounded-lg mx-auto max-w-3xl bg-red-200 px-6 py-3 mt-6 mb-2">
             <p class="text-red-800 text-sm">
-                <?= $data['error_message'] ?>
+                <?= nl2br($data['error_message']) ?>
             </p>
         </div>
     </div>
