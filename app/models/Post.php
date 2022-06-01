@@ -143,6 +143,8 @@ class Post
 
     public function update(string $title, string $content)
     {
+        self::validate($title, $content);
+        
         $post_id = $this->id;
         
         $pdo = PDOFactory::create();
