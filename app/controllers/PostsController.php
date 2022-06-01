@@ -3,6 +3,7 @@ namespace App\controllers;
 
 use App\lib\Controller;
 use App\models\Post;
+use App\models\Tag;
 use App\services\AttachTagsService;
 
 class PostsController extends Controller
@@ -48,10 +49,9 @@ class PostsController extends Controller
     {
         $post = Post::getById($id);
         $post->getTags();
-        $tag_ids = [];
-        foreach ($post->tags as $tag) {
-            array_push($tag_ids, $tag->id);
-        }
+        $tag_ids = array_map(function (Tag $tag) {
+            return $tag->id;
+        }, $post->tags);
 
         $this->addData('post', $post);
         $this->addData('tag_ids', $tag_ids);

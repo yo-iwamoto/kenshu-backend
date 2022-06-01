@@ -70,7 +70,6 @@ class Post
     {
         $pdo = PDOFactory::create();
 
-        $result = [];
         $statement = $pdo->query(
             'SELECT
                 posts.*,
@@ -84,9 +83,9 @@ class Post
         '
         );
 
-        while ($row = $statement->fetch()) {
-            array_push($result, new Post($row));
-        }
+        $result =  array_map(function ($row) {
+            return new Post($row);
+        }, $statement->fetchAll());
 
         return $result;
     }

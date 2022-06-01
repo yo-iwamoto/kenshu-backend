@@ -34,11 +34,9 @@ class Tag
         $statement->bindParam(':post_id', $post_id, PDO::PARAM_INT);
         $statement->execute();
 
-        $result = [];
-
-        foreach ($statement->fetchAll() as $row) {
-            array_push($result, new Tag($row));
-        }
+        $result = array_map(function ($row) {
+            return new Tag($row);
+        }, $statement->fetchAll());
 
         return $result;
     }
