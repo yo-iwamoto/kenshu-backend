@@ -2,8 +2,8 @@
 namespace App\services;
 
 use App\lib\Request;
+use App\lib\ServerException;
 use App\models\User;
-use Exception;
 use Ramsey\Uuid\Uuid;
 
 class SignupService
@@ -30,7 +30,7 @@ class SignupService
         if ($uploaded_file_path) {
             move_uploaded_file($request->files['profile_image']['tmp_name'], '../public' . $uploaded_file_path);
         }
-            
+
         $user = User::getByEmail($request->post['email']);
 
         $request->setSession('user_id', $user->id);
@@ -46,12 +46,12 @@ class SignupService
         // ファイル形式の確認
         $valid_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
         if (!in_array(mime_content_type($file['tmp_name']), $valid_types, true)) {
-            throw new Exception('invalid file type');
+            throw ServerException::invalidRequest(display_text: '不正なファイル形式です');
         }
 
         // 画像サイズの確認
-        if ($file['size'] > 1000000) {
-            throw new Exception('file size is too big');
+        if ($file['size'] > 10000000) {
+            throw ServerException::invalidRequest(display_text: 'アップロードできるファイルサイズの上限は10MBです');
         }
     }
 }

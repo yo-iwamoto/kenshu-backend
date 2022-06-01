@@ -1,8 +1,10 @@
 <?php
 namespace App\models;
 
+use App\lib\ServerException;
 use App\lib\PDOFactory;
 use Exception;
+use PDOException;
 
 class User
 {
@@ -53,13 +55,16 @@ class User
             $statement->bindParam(':profile_image_url', $profile_image_url);
 
             $statement->execute();
-        } catch (PDOException $err) {
-            if ($err->getCode() === '23505') {
-                // TODO: フィードバック
-            } else {
-                print_r($err);
-                throw Exception('failed adding data');
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                if ($exception->getCode() === '23505') {
+                    throw ServerException::alreadyExists($exception);
+                }
+
+                throw ServerException::database($exception);
             }
+
+            throw ServerException::internal($exception);
         }
     }
 

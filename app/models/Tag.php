@@ -1,8 +1,11 @@
 <?php
 namespace App\models;
 
+use App\lib\ServerException;
 use App\lib\PDOFactory;
+use Exception;
 use PDO;
+use PDOException;
 
 class Tag
 {
@@ -21,23 +24,31 @@ class Tag
     {
         $pdo = PDOFactory::create();
 
-        $statement = $pdo->prepare(
-            'SELECT tags.*
-            FROM posts
-            INNER JOIN post_to_tags
-                ON posts.id = post_to_tags.post_id
-            LEFT JOIN tags
-                ON post_to_tags.tag_id = tags.id
-            WHERE posts.id = :post_id;
-            '
-        );
-        $statement->bindParam(':post_id', $post_id, PDO::PARAM_INT);
-        $statement->execute();
+        try {
+            $statement = $pdo->prepare(
+                'SELECT tags.*
+                FROM posts
+                INNER JOIN post_to_tags
+                    ON posts.id = post_to_tags.post_id
+                LEFT JOIN tags
+                    ON post_to_tags.tag_id = tags.id
+                WHERE posts.id = :post_id;
+                '
+            );
+            $statement->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+            $statement->execute();
+    
+            $result = array_map(function ($row) {
+                return new Tag($row);
+            }, $statement->fetchAll());
+    
+            return $result;
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
 
-        $result = array_map(function ($row) {
-            return new Tag($row);
-        }, $statement->fetchAll());
-
-        return $result;
+            throw ServerException::internal($exception);
+        }
     }
 }

@@ -20,3 +20,8 @@ make seed
 email: sample@example.com
 password: password
 ```
+
+## 構成について
+- データベースアクセスは Model 層からのみ行う。(Entity 層を挟みたいか抽象化がうまくいってない)
+- 今のところ Controller から Model を扱うことを制限はしておらず、複数モデルを跨ぐ処理を含むものや複雑なもののみ Service を切っている。
+- Model、Servie の外に出るエラーは全て ServerException とし、Controller で処理する (TODO)

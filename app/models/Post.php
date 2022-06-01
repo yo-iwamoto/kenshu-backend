@@ -2,6 +2,8 @@
 namespace App\models;
 
 use App\lib\PDOFactory;
+use App\lib\ModelException;
+use App\lib\ServerException;
 use Exception;
 use PDO;
 use PDOException;
@@ -42,9 +44,9 @@ class Post
         string $title,
         string $content,
     ) {
+        $pdo = PDOFactory::create();
+        
         try {
-            $pdo = PDOFactory::create();
-                
             $statement = $pdo->prepare(
                 'INSERT INTO posts
                     (user_id, title, content, created_at)
@@ -60,9 +62,12 @@ class Post
             $statement->execute();
 
             return $statement->fetch()['id'];
-        } catch (PDOException $err) {
-            print_r($err);
-            throw Exception('failed adding data');
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
+
+            throw ServerException::internal($exception);
         }
     }
 
@@ -70,51 +75,68 @@ class Post
     {
         $pdo = PDOFactory::create();
 
-        $statement = $pdo->query(
-            'SELECT
-                posts.*,
-                users.name AS user__name,
-                users.profile_image_url AS user__profile_image_url,
-                post_images.image_url AS thumbnail_post_image_url
-            FROM posts
-                INNER JOIN users ON posts.user_id = users.id
-                LEFT JOIN post_images ON post_images.id = posts.thumbnail_post_image_id
-            ORDER BY created_at DESC;
-        '
-        );
+        try {
+            $statement = $pdo->query(
+                'SELECT
+                    posts.*,
+                    users.name AS user__name,
+                    users.profile_image_url AS user__profile_image_url,
+                    post_images.image_url AS thumbnail_post_image_url
+                FROM posts
+                    INNER JOIN users ON posts.user_id = users.id
+                    LEFT JOIN post_images ON post_images.id = posts.thumbnail_post_image_id
+                ORDER BY created_at DESC;
+            '
+            );
+    
+            $result =  array_map(function ($row) {
+                return new Post($row);
+            }, $statement->fetchAll());
+    
+            return $result;
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
 
-        $result =  array_map(function ($row) {
-            return new Post($row);
-        }, $statement->fetchAll());
-
-        return $result;
+            throw ServerException::internal($exception);
+        }
     }
 
     public static function getById(string $id)
     {
         $pdo = PDOFactory::create();
-        $statement = $pdo->prepare(
-            'SELECT
-                posts.*,
-                users.name AS user__name,
-                users.profile_image_url AS user__profile_image_url,
-                post_images.image_url AS thumbnail_post_image_url
-            FROM posts
-                INNER JOIN users ON posts.user_id = users.id
-                LEFT JOIN post_images ON post_images.id = posts.id
-            WHERE posts.id = :id
-            LIMIT 1;
-        '
-        );
-        $statement->bindParam(':id', $id, PDO::PARAM_INT);
-        $statement->execute();
 
-        $result = $statement->fetch();
+        try {
+            $statement = $pdo->prepare(
+                'SELECT
+                    posts.*,
+                    users.name AS user__name,
+                    users.profile_image_url AS user__profile_image_url,
+                    post_images.image_url AS thumbnail_post_image_url
+                FROM posts
+                    INNER JOIN users ON posts.user_id = users.id
+                    LEFT JOIN post_images ON post_images.id = posts.id
+                WHERE posts.id = :id
+                LIMIT 1;
+            '
+            );
+            $statement->bindParam(':id', $id, PDO::PARAM_INT);
+            $statement->execute();
+    
+            $result = $statement->fetch();
+    
+            if (!$result) {
+                throw  ModelException::noSuchRecord();
+            }
+            return new Post($result);
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
 
-        if (!$result) {
-            throw new Exception('no such post');
+            throw ServerException::internal($exception);
         }
-        return new Post($result);
     }
 
     public function update(string $title, string $content)
@@ -123,18 +145,26 @@ class Post
         
         $pdo = PDOFactory::create();
 
-        $statement = $pdo->prepare(
-            'UPDATE posts
+        try {
+            $statement = $pdo->prepare(
+                'UPDATE posts
             SET
                 title = :title,
                 content = :content
             WHERE id = :id
-        '
-        );
-        $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
-        $statement->bindParam(':title', $title);
-        $statement->bindParam(':content', $content);
-        $statement->execute();
+            '
+            );
+            $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
+            $statement->bindParam(':title', $title);
+            $statement->bindParam(':content', $content);
+            $statement->execute();
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
+
+            throw ServerException::internal($exception);
+        }
     }
 
     public function destroy()
@@ -143,9 +173,17 @@ class Post
         
         $pdo = PDOFactory::create();
 
-        $statement = $pdo->prepare('DELETE FROM posts WHERE id = :id');
-        $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
-        $statement->execute();
+        try {
+            $statement = $pdo->prepare('DELETE FROM posts WHERE id = :id');
+            $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (Exception $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
+
+            throw ServerException::internal($exception);
+        }
     }
 
     public function getTags()
