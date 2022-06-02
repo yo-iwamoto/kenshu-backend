@@ -1,12 +1,13 @@
 <?php
 namespace App\models;
 
-use App\lib\PDOFactory;
-use App\lib\ModelException;
+use App\dto\CreatePostDto;
+use App\dto\UpdatePostDto;
 use App\lib\ServerException;
-use Exception;
+
 use PDO;
 use PDOException;
+use Exception;
 
 class Post
 {
@@ -27,7 +28,7 @@ class Post
 
     private function __construct(array $row)
     {
-        $this->id = $row['id'];
+        $this->id = strval($row['id']);
         // thumbnail_url は nullable のため、null のとき専用の画像の URL を指定する
         $this->thumbnail_url = $row['thumbnail_url'] ?? self::NO_IMAGE_URL;
         $this->title = $row['title'];
@@ -39,32 +40,33 @@ class Post
         $this->user__profile_image_url = $row['user__profile_image_url'];
     }
 
-    public static function create(
-        string $user_id,
-        string $title,
-        string $content,
-    ) {
-        self::validate($title, $content);
-        
-        $pdo = PDOFactory::create();
-        
+    /**
+     * @return string INSERT されたレコードの `id`
+     * INSERT 後、id を返す (User を作るには JOIN が必要なので id だけ)
+     */
+    public static function create(PDO $pdo, CreatePostDto $dto): string
+    {
+        self::validate($dto);
+
         try {
             $statement = $pdo->prepare(
                 'INSERT INTO posts
                     (user_id, title, content, created_at)
                 VALUES
                     (:user_id, :title, :content, NOW())
-                RETURNING *;
+                RETURNING *
                 '
             );
-            $statement->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $statement->bindParam(':title', $title);
-            $statement->bindParam(':content', $content);
-    
+            $statement->bindParam(':user_id', $dto->user_id, PDO::PARAM_INT);
+            $statement->bindParam(':title', $dto->title);
+            $statement->bindParam(':content', $dto->content);
+
             $statement->execute();
 
-            return $statement->fetch()['id'];
-        } catch (Exception $exception) {
+            $created_post_id = $statement->fetch()['id'];
+            
+            return $created_post_id;
+        } catch (Exception | PDOException $exception) {
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -73,30 +75,27 @@ class Post
         }
     }
 
-    public static function getAll()
+    public static function getAll(PDO $pdo)
     {
-        $pdo = PDOFactory::create();
-
         try {
             $statement = $pdo->query(
                 'SELECT
                     posts.*,
+                    post_images.image_url AS thumbnail_post_image_url,
                     users.name AS user__name,
-                    users.profile_image_url AS user__profile_image_url,
-                    post_images.image_url AS thumbnail_post_image_url
+                    users.profile_image_url AS user__profile_image_url
                 FROM posts
                     INNER JOIN users ON posts.user_id = users.id
                     LEFT JOIN post_images ON post_images.id = posts.thumbnail_post_image_id
-                ORDER BY created_at DESC;
-            '
+                ORDER BY created_at DESC
+                '
             );
-    
-            $result =  array_map(function ($row) {
-                return new Post($row);
-            }, $statement->fetchAll());
-    
+
+            $result = array_map(fn ($row) => new self($row), $statement->fetchAll());
+
             return $result;
-        } catch (Exception $exception) {
+        } catch (Exception | PDOException $exception) {
+            var_dump('hello');
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -105,10 +104,11 @@ class Post
         }
     }
 
-    public static function getById(string $id)
+    /**
+     * @throws ServerException
+     */
+    public static function getById(PDO $pdo, string $id): self
     {
-        $pdo = PDOFactory::create();
-
         try {
             $statement = $pdo->prepare(
                 'SELECT
@@ -120,19 +120,19 @@ class Post
                     INNER JOIN users ON posts.user_id = users.id
                     LEFT JOIN post_images ON post_images.id = posts.id
                 WHERE posts.id = :id
-                LIMIT 1;
-            '
+                LIMIT 1
+                '
             );
             $statement->bindParam(':id', $id, PDO::PARAM_INT);
             $statement->execute();
-    
+
             $result = $statement->fetch();
-    
+
             if (!$result) {
-                throw  ModelException::noSuchRecord();
+                throw  ServerException::noSuchRecord();
             }
-            return new Post($result);
-        } catch (Exception $exception) {
+            return new self($result);
+        } catch (Exception | PDOException $exception) {
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -141,28 +141,29 @@ class Post
         }
     }
 
-    public function update(string $title, string $content)
+    /**
+     * @throws ServerException
+     */
+    public function update(PDO $pdo, UpdatePostDto $dto)
     {
-        self::validate($title, $content);
-        
+        self::validate($dto);
+
         $post_id = $this->id;
-        
-        $pdo = PDOFactory::create();
 
         try {
             $statement = $pdo->prepare(
                 'UPDATE posts
-            SET
-                title = :title,
-                content = :content
-            WHERE id = :id
-            '
+                SET
+                    title = :title,
+                    content = :content
+                WHERE id = :id
+                '
             );
             $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
-            $statement->bindParam(':title', $title);
-            $statement->bindParam(':content', $content);
+            $statement->bindParam(':title', $dto->title);
+            $statement->bindParam(':content', $dto->content);
             $statement->execute();
-        } catch (Exception $exception) {
+        } catch (Exception | PDOException $exception) {
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -171,17 +172,18 @@ class Post
         }
     }
 
-    public function destroy()
+    /**
+     * @throws ServerException
+     */
+    public function destroy(PDO $pdo): void
     {
         $post_id = $this->id;
         
-        $pdo = PDOFactory::create();
-
         try {
             $statement = $pdo->prepare('DELETE FROM posts WHERE id = :id');
             $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
             $statement->execute();
-        } catch (Exception $exception) {
+        } catch (Exception | PDOException $exception) {
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -190,31 +192,34 @@ class Post
         }
     }
 
-    public function getTags()
+    /**
+     * getAll などで一般化して JOIN できなかったためやむなくの実装;
+     * 複数件取得時に叩くと容易に N+1 になるので注意
+     * @throws ServerException
+     */
+    public function getTags(PDO $pdo)
     {
-        $this->tags = Tag::getAllByPostId($this->id);
+        $this->tags = Tag::getAllByPostId($pdo, $this->id);
     }
 
     /**
      * @param array $data クライアントからの入力
      * @return void
-     * 不正なとき例外を投げる
+     * @throws SererException
      */
-    public static function validate(
-        string $title,
-        string $content,
-    ): void {
+    public static function validate(CreatePostDto|UpdatePostDto $dto): void
+    {
         $errors = [];
 
-        if (strlen($title) === 0) {
+        if (strlen($dto->title) === 0) {
             array_push($errors, 'タイトルは必須項目です');
         }
 
-        if (strlen($title) > 100) {
+        if (strlen($dto->title) > 100) {
             array_push($errors, 'タイトルは100文字以内で入力してください');
         }
 
-        if (strlen($content) === 0) {
+        if (strlen($dto->content) === 0) {
             array_push($errors, '本文は必須項目です') ;
         }
 

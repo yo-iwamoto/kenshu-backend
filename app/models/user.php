@@ -1,8 +1,9 @@
 <?php
 namespace App\models;
 
+use App\dto\CreateUserDto;
 use App\lib\ServerException;
-use App\lib\PDOFactory;
+
 use Exception;
 use PDO;
 use PDOException;
@@ -18,7 +19,7 @@ class User
 
     private function __construct(array $row)
     {
-        $this->id = $row['id'];
+        $this->id = strval($row['id']);
         $this->name = $row['name'];
         $this->profile_image_url = $row['profile_image_url'];
         $this->email = $row['email'];
@@ -33,15 +34,9 @@ class User
      * @param string $password
      * @param ?string $profile_image_url
      */
-    public static function create(
-        string $name,
-        string $email,
-        string $password,
-        string $profile_image_url,
-    ) {
-        self::validate($name, $email, $password);
-        
-        $pdo = PDOFactory::create();
+    public static function create(PDO $pdo, CreateUserDto $dto)
+    {
+        self::validate($dto);
 
         try {
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
@@ -52,13 +47,13 @@ class User
                     (:name, :email, :password_hash, :profile_image_url, NOW())
                 '
             );
-            $statement->bindParam(':name', $name);
-            $statement->bindParam(':email', $email);
+            $statement->bindParam(':name', $dto->name);
+            $statement->bindParam(':email', $dto->email);
             $statement->bindParam(':password_hash', $password_hash);
-            $statement->bindParam(':profile_image_url', $profile_image_url);
+            $statement->bindParam(':profile_image_url', $dto->profile_image_url);
 
             $statement->execute();
-        } catch (Exception $exception) {
+        } catch (Exception | ServerException $exception) {
             if ($exception instanceof PDOException) {
                 if ($exception->getCode() === '23505') {
                     throw ServerException::emailAlreadyExists($exception);
@@ -76,9 +71,8 @@ class User
      * @param string $email
      * @return User
      */
-    public static function getByEmail(string $email): self
+    public static function getByEmail(PDO $pdo, string $email): self
     {
-        $pdo = PDOFactory::create();
         $statement = $pdo->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
         $statement->bindParam(':email', $email);
 
@@ -97,9 +91,8 @@ class User
      * @param string $id
      * @return User
      */
-    public static function getById(string $id): self
+    public static function getById(PDO $pdo, string $id): self
     {
-        $pdo = PDOFactory::create();
         $statement = $pdo->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
         $statement->bindParam(':id', $id, PDO::PARAM_INT);
 
@@ -127,33 +120,33 @@ class User
      * @return void
      * 不正なとき例外を投げる
      */
-    public static function validate(
-        string $name,
-        string $email,
-        string $password,
-    ): void {
+    public static function validate(CreateUserDto $dto): void
+    {
         $errors = [];
 
-        if (strlen($name) === 0) {
+        if (strlen($dto->name) === 0) {
             array_push($errors, 'ユーザー名は必須項目です');
         }
 
-        if (strlen($name) > 100) {
+        if (strlen($dto->name) > 100) {
             array_push($errors, 'ユーザー名は100文字以内で入力してください');
         }
 
-        if (strlen($password) === 0) {
+        if (strlen($dto->password) === 0) {
             array_push($errors, 'パスワードは必須項目です') ;
         }
 
-        if (strlen($password) > 72) {
-            array_push($errors, 'ユーザー名は72文字以内で入力してください');
+        if (strlen($dto->password) > 72) {
+            array_push($errors, 'パスワードは72文字以内で入力してください');
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            array_push($errors, 'メールアドレスの形式が誤っています');
+        // 現実的に妥当そうなメールアドレスの検証 (quoted-string などを含まない)
+        /** @see https://developer.mozilla.org/ja/docs/Web/HTML/Element/input/email#%E5%9F%BA%E6%9C%AC%E7%9A%84%E3%81%AA%E6%A4%9C%E8%A8%BC */
+        $valid_email_regex = "/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/";
+        if (!preg_match($valid_email_regex, $dto->email)) {
+            throw ServerException::invalidRequest(display_text: 'メールアドレスの形式が誤っています');
         }
-
+        
         if (count($errors) !== 0) {
             throw ServerException::invalidRequest(display_text: join('<br />', $errors));
         }

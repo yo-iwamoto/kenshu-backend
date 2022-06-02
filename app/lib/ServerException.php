@@ -2,6 +2,7 @@
 namespace App\lib;
 
 use App\lib\ServerExceptionName;
+
 use Exception;
 
 class ServerException extends Exception
@@ -37,5 +38,10 @@ class ServerException extends Exception
     public static function invalidRequest(?Exception $inner = null, ?string $display_text = '不正な入力です'): self
     {
         return new self(ServerExceptionName::INVALID_REQUEST, $display_text, $inner);
+    }
+
+    public static function unauthorized(?Exception $inner = null, ?string $display_text = '不正な入力です'): self
+    {
+        return new self(ServerExceptionName::UNAUTHORIZED, $display_text, $inner);
     }
 }

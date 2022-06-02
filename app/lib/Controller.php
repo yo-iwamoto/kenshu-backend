@@ -3,8 +3,8 @@
 namespace App\lib;
 
 use App\lib\Request;
-use App\models\User;
 use App\views\ApplicationView;
+
 use Closure;
 use Exception;
 
@@ -15,7 +15,7 @@ abstract class Controller
     // テンプレートに渡される値
     protected array $data = [];
 
-    protected function addData(string $key, mixed $value)
+    protected function setData(string $key, mixed $value)
     {
         $this->data = array_merge($this->data, array($key => $value));
     }
@@ -66,14 +66,12 @@ abstract class Controller
     protected function view(Request $request, string $dir, string $name)
     {
         $is_authenticated = $request->isAuthenticated();
-        $this->addData('is_authenticated', $is_authenticated);
-        $this->addData('current_user', $is_authenticated ? User::getById($request->getSession('user_id')) : null);
-
+        $this->setData('is_authenticated', $is_authenticated);
 
         // CSRF token の生成・セット
         $csrf_token = bin2hex(random_bytes(32));
         $request->setSession('csrf_token', $csrf_token);
-        $this->addData('csrf_token', $csrf_token);
+        $this->setData('csrf_token', $csrf_token);
 
         $data  = $this->data;
 
@@ -163,7 +161,7 @@ abstract class Controller
     public function validateCsrfToken(Request $request)
     {
         if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
-            $this->addData('http_referer', $request->server['HTTP_REFERER']);
+            $this->setData('http_referer', $request->server['HTTP_REFERER']);
             $this->view($request, 'utils/', 'csrf_error');
         }
     }
@@ -177,8 +175,8 @@ abstract class Controller
             $callback();
 
             $this->view($request, $this->view_dir, $template);
-        } catch (Exception $exception) {
-            $this->addData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
+        } catch (Exception | ServerException $exception) {
+            $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
 
             $this->view($request, $this->view_dir, $error_template !== null ? $error_template : $template);
         }

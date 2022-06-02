@@ -2,12 +2,12 @@
 
 use App\lib\Request;
 use App\lib\Router;
-use Dotenv\Dotenv;
-
 use App\controllers\HomeController;
 use App\controllers\PostsController;
 use App\controllers\SessionsController;
 use App\controllers\UsersController;
+
+use Dotenv\Dotenv;
 
 class Initializer
 {

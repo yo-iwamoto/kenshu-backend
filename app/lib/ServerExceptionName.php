@@ -9,4 +9,5 @@ enum ServerExceptionName: string
     case EMAIL_ALREADY_EXISTS = 'email-already-exists';
     case INVALID_REQUEST = 'invalid-request';
     case CSRF_CHECK_FAILED = 'csrf-check-failed';
+    case UNAUTHORIZED = 'unauthorized';
 }

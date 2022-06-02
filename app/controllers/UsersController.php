@@ -2,7 +2,7 @@
 namespace App\controllers;
 
 use App\lib\Controller;
-use App\services\SignupService;
+use App\services\UserService;
 
 class UsersController extends Controller
 {
@@ -22,7 +22,7 @@ class UsersController extends Controller
 
     protected function create($request)
     {
-        SignupService::execute($request);
+        UserService::signup($request);
 
         // 記事一覧画面へリダイレクト
         $request->redirect('/posts');
