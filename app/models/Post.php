@@ -95,7 +95,6 @@ class Post
 
             return $result;
         } catch (Exception | PDOException $exception) {
-            var_dump('hello');
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }

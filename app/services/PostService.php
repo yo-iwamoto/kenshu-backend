@@ -107,8 +107,6 @@ class PostService
         } catch (Exception | ServerException $exception) {
             $pdo->rollBack();
 
-            print_r($exception);
-
             throw $exception;
         }
     }

@@ -59,7 +59,6 @@ class PostsController extends Controller
 
             $request->redirect("/posts/$id/");
         } catch (Exception | ServerException $exception) {
-            print_r($exception);
             $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
 
             // TODO: 別の方法で対処 (一覧画面と新規作成画面が同一なので、エラー時にも posts を取得する必要がある問題)
