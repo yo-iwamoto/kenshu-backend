@@ -77,7 +77,8 @@ class Request
             throw ServerException::unauthorized(display_text: 'ログインしてください');
         }
         
-        return UserGetService::execute($this->getSession('user_id'));
+        $service = new UserGetService($this, $this->getSession('user_id'));
+        return $service->execute();
     }
 
     public function redirect(string $path, int $status_code = 302): void

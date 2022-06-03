@@ -18,14 +18,17 @@ class PostsController extends Controller
 
     protected function index($request)
     {
-        $posts = IndexService::execute();
+        $service = new IndexService($request);
+        $posts = $service->execute();
 
         $this->setData('posts', $posts);
     }
 
-    protected function show($_, $id)
+    protected function show($request, $id)
     {
-        $post = GetService::execute($id);
+        $service = new GetService($request, $id);
+        $post = $service->execute();
+        
 
         $this->setData('post', $post);
     }
@@ -33,14 +36,15 @@ class PostsController extends Controller
     protected function create($request)
     {
         try {
-            $post = CreateService::execute($request);
+            $service = new CreateService($request);
+            $post = $service->execute();
 
             $request->redirect("/posts/{$post->id}");
         } catch (Exception | ServerException $exception) {
             $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
 
-            // TODO: 別の方法で対処 (一覧画面と新規作成画面が同一なので、エラー時にも posts を取得する必要がある問題)
-            $posts = IndexService::execute();
+            $index_service = new IndexService($request);
+            $posts = $index_service->execute();
             $this->setData('posts', $posts);
 
             $this->view($request, self::VIEW_DIR, 'index');
@@ -49,7 +53,8 @@ class PostsController extends Controller
 
     protected function edit($request, $id)
     {
-        $post = GetService::execute($id);
+        $service = new GetService($request, $id);
+        $post = $service->execute();
         $this->setData('post', $post);
 
         $tag_ids = array_map(fn (Tag $tag) => $tag->id, $post->tags);
@@ -59,14 +64,15 @@ class PostsController extends Controller
     protected function update($request, $id)
     {
         try {
-            UpdateService::execute($request, $id);
+            $service = new UpdateService($request, $id);
+            $service->execute();
 
             $request->redirect("/posts/$id/");
         } catch (Exception | ServerException $exception) {
             $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
 
-            // TODO: 別の方法で対処 (一覧画面と新規作成画面が同一なので、エラー時にも posts を取得する必要がある問題)
-            $post = GetService::execute($id);
+            $get_service = new GetService($request, $id);
+            $post = $get_service->execute();
             $this->setData('post', $post);
 
             $tag_ids = array_map(fn (Tag $tag) => $tag->id, $post->tags);
@@ -78,7 +84,8 @@ class PostsController extends Controller
 
     protected function destroy($request, $id)
     {
-        DestroyService::execute($id);
+        $service = new DestroyService($request, $id);
+        $service->execute();
 
         $request->redirect('/posts/');
     }
