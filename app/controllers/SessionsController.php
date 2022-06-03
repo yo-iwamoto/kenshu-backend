@@ -2,7 +2,8 @@
 namespace App\controllers;
 
 use App\lib\Controller;
-use App\services\SessionService;
+use App\services\session\LoginService;
+use App\services\session\LogoutService;
 
 class SessionsController extends Controller
 {
@@ -22,7 +23,8 @@ class SessionsController extends Controller
 
     protected function create($request)
     {
-        SessionService::login($request);
+        $service = new LoginService();
+        $service->execute($request);
 
         // 記事一覧画面へリダイレクト
         return $request->redirect('/posts');
@@ -30,7 +32,8 @@ class SessionsController extends Controller
 
     protected function destroy($request, $_)
     {
-        SessionService::logout($request);
+        $service = new LogoutService();
+        $service->execute($request);
 
         return $request->redirect('/');
     }

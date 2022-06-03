@@ -1,19 +1,18 @@
 <?php
-namespace App\services;
+namespace App\services\user;
 
 use App\dto\CreateUserDto;
-use App\lib\PDOFactory;
 use App\lib\Request;
-use App\services\ValidateUploadedImageService;
 use App\models\User;
-
+use App\services\common\ValidateUploadedImageService;
+use App\services\concerns\Service;
 use Ramsey\Uuid\Uuid;
 
-class UserService
+class SignupService extends Service
 {
-    public static function signup(Request $request)
+    public function execute(Request $request)
     {
-        $pdo = PDOFactory::create();
+        $pdo = $this->pdo;
 
         $uploaded_file_path = null;
 
@@ -43,12 +42,5 @@ class UserService
         $request->setSession('user_id', $user->id);
 
         return $user;
-    }
-
-    public static function get(string $id)
-    {
-        $pdo = PDOFactory::create();
-
-        return User::getById($pdo, $id);
     }
 }
