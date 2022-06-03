@@ -17,7 +17,7 @@
             <div>
                 <label for="image" class="block">プロフィール画像<small class="pl-2">(png, jpg, gif
                         形式のファイルを指定してください)</small></label>
-                <input id="image" type="file" accept="image/*" src="" alt="" name="profile_image">
+                <input id="image" type="file" accept="image/*" name="profile_image">
             </div>
 
             <div id="js-preview-container"></div>
