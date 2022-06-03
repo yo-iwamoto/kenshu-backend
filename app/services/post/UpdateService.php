@@ -2,19 +2,20 @@
 namespace App\services\post;
 
 use App\dto\UpdatePostDto;
-use App\lib\PDOFactory;
-use App\lib\Request;
 use App\lib\ServerException;
 use App\models\Post;
 use App\models\PostToTag;
+use App\services\concerns\ServiceWithId;
 
 use Exception;
 
-class UpdateService
+class UpdateService extends ServiceWithId
 {
-    public static function execute(Request $request, string $id)
+    public function execute()
     {
-        $pdo = PDOFactory::create();
+        $pdo = $this->pdo;
+        $request = $this->request;
+        $id = $this->id;
 
         $current_user_id = $request->getCurrentUserId();
 

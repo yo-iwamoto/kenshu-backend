@@ -2,19 +2,19 @@
 namespace App\services\post;
 
 use App\dto\CreatePostDto;
-use App\lib\PDOFactory;
-use App\lib\Request;
 use App\lib\ServerException;
 use App\models\Post;
 use App\models\PostToTag;
+use App\services\concerns\Service;
 
 use Exception;
 
-class CreateService
+class CreateService extends Service
 {
-    public static function execute(Request $request)
+    public function execute()
     {
-        $pdo = PDOFactory::create();
+        $pdo = $this->pdo;
+        $request = $this->request;
 
         $current_user_id = $request->getCurrentUserId();
 

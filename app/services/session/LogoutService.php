@@ -1,12 +1,14 @@
 <?php
 namespace App\services\session;
 
-use App\lib\Request;
+use App\services\concerns\Service;
 
-class LogoutService
+class LogoutService extends Service
 {
-    public static function execute(Request $request)
+    public function execute()
     {
+        $request = $this->request;
+
         $request->unsetSession('user_id');
     }
 }

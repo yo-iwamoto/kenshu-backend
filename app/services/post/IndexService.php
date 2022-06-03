@@ -1,14 +1,14 @@
 <?php
 namespace App\services\post;
 
-use App\lib\PDOFactory;
 use App\models\Post;
+use App\services\concerns\Service;
 
-class IndexService
+class IndexService extends Service
 {
-    public static function execute()
+    public function execute()
     {
-        $pdo = PDOFactory::create();
+        $pdo = $this->pdo;
 
         return Post::getAll($pdo);
     }

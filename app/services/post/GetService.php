@@ -1,14 +1,15 @@
 <?php
 namespace App\services\post;
 
-use App\lib\PDOFactory;
 use App\models\Post;
+use App\services\concerns\ServiceWithId;
 
-class GetService
+class GetService extends ServiceWithId
 {
-    public static function execute(string $id)
+    public function execute()
     {
-        $pdo = PDOFactory::create();
+        $pdo = $this->pdo;
+        $id = $this->id;
 
         $post = Post::getById($pdo, $id);
         $post->getTags($pdo);
