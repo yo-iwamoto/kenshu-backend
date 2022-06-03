@@ -2,14 +2,13 @@
 namespace App\services\user;
 
 use App\models\User;
-use App\services\concerns\ServiceWithId;
+use App\services\concerns\Service;
 
-class GetService extends ServiceWithId
+class GetService extends Service
 {
-    public function execute()
+    public function execute(string $id)
     {
         $pdo = $this->pdo;
-        $id = $this->id;
 
         return User::getById($pdo, $id);
     }

@@ -22,8 +22,8 @@ class UsersController extends Controller
 
     protected function create($request)
     {
-        $service = new SignupService($request);
-        $service->execute();
+        $service = new SignupService();
+        $service->execute($request);
 
         // 記事一覧画面へリダイレクト
         $request->redirect('/posts');

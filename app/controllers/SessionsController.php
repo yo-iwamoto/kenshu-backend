@@ -23,7 +23,7 @@ class SessionsController extends Controller
 
     protected function create($request)
     {
-        $service = new LoginService($request);
+        $service = new LoginService();
         $service->execute($request);
 
         // 記事一覧画面へリダイレクト
@@ -32,8 +32,8 @@ class SessionsController extends Controller
 
     protected function destroy($request, $_)
     {
-        $service = new LogoutService($request);
-        $service->execute();
+        $service = new LogoutService();
+        $service->execute($request);
 
         return $request->redirect('/');
     }

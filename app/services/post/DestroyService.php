@@ -2,14 +2,13 @@
 namespace App\services\post;
 
 use App\models\Post;
-use App\services\concerns\ServiceWithId;
+use App\services\concerns\Service;
 
-class DestroyService extends ServiceWithId
+class DestroyService extends Service
 {
-    public function execute()
+    public function execute(string $id)
     {
         $pdo = $this->pdo;
-        $id = $this->id;
 
         $post = Post::getById($pdo, $id);
 

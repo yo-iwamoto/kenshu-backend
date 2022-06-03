@@ -2,6 +2,7 @@
 namespace App\services\user;
 
 use App\dto\CreateUserDto;
+use App\lib\Request;
 use App\models\User;
 use App\services\common\ValidateUploadedImageService;
 use App\services\concerns\Service;
@@ -9,10 +10,9 @@ use Ramsey\Uuid\Uuid;
 
 class SignupService extends Service
 {
-    public function execute()
+    public function execute(Request $request)
     {
         $pdo = $this->pdo;
-        $request = $this->request;
 
         $uploaded_file_path = null;
 

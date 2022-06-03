@@ -18,16 +18,16 @@ class PostsController extends Controller
 
     protected function index($request)
     {
-        $service = new IndexService($request);
+        $service = new IndexService();
         $posts = $service->execute();
 
         $this->setData('posts', $posts);
     }
 
-    protected function show($request, $id)
+    protected function show($_, $id)
     {
-        $service = new GetService($request, $id);
-        $post = $service->execute();
+        $service = new GetService();
+        $post = $service->execute($id);
         
 
         $this->setData('post', $post);
@@ -36,14 +36,14 @@ class PostsController extends Controller
     protected function create($request)
     {
         try {
-            $service = new CreateService($request);
-            $post = $service->execute();
+            $service = new CreateService();
+            $post = $service->execute($request);
 
             $request->redirect("/posts/{$post->id}");
         } catch (Exception | ServerException $exception) {
             $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
 
-            $index_service = new IndexService($request);
+            $index_service = new IndexService();
             $posts = $index_service->execute();
             $this->setData('posts', $posts);
 
@@ -53,8 +53,8 @@ class PostsController extends Controller
 
     protected function edit($request, $id)
     {
-        $service = new GetService($request, $id);
-        $post = $service->execute();
+        $service = new GetService();
+        $post = $service->execute($id);
         $this->setData('post', $post);
 
         $tag_ids = array_map(fn (Tag $tag) => $tag->id, $post->tags);
@@ -64,15 +64,15 @@ class PostsController extends Controller
     protected function update($request, $id)
     {
         try {
-            $service = new UpdateService($request, $id);
-            $service->execute();
+            $service = new UpdateService();
+            $service->execute($request, $id);
 
             $request->redirect("/posts/$id/");
         } catch (Exception | ServerException $exception) {
             $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
 
-            $get_service = new GetService($request, $id);
-            $post = $get_service->execute();
+            $get_service = new GetService();
+            $post = $get_service->execute($id);
             $this->setData('post', $post);
 
             $tag_ids = array_map(fn (Tag $tag) => $tag->id, $post->tags);
@@ -84,8 +84,8 @@ class PostsController extends Controller
 
     protected function destroy($request, $id)
     {
-        $service = new DestroyService($request, $id);
-        $service->execute();
+        $service = new DestroyService();
+        $service->execute($id);
 
         $request->redirect('/posts/');
     }

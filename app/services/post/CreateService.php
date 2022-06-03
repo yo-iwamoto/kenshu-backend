@@ -2,6 +2,7 @@
 namespace App\services\post;
 
 use App\dto\CreatePostDto;
+use App\lib\Request;
 use App\lib\ServerException;
 use App\models\Post;
 use App\models\PostToTag;
@@ -11,10 +12,9 @@ use Exception;
 
 class CreateService extends Service
 {
-    public function execute()
+    public function execute(Request $request)
     {
         $pdo = $this->pdo;
-        $request = $this->request;
 
         $current_user_id = $request->getCurrentUserId();
 

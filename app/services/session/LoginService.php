@@ -1,17 +1,18 @@
 <?php
 namespace App\services\session;
 
+use App\lib\Request;
 use App\lib\ServerException;
 use App\models\User;
 use App\services\concerns\Service;
+
 use Exception;
 
 class LoginService extends Service
 {
-    public function execute()
+    public function execute(Request $request)
     {
         $pdo = $this->pdo;
-        $request = $this->request;
 
         try {
             $user = User::getByEmail($pdo, $request->post['email']);
