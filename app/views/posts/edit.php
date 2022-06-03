@@ -5,7 +5,8 @@ $post = $data['post'];
 
 <div class="mt-10 mx-8">
     <div class="max-w-5xl mx-auto">
-        <form action="/posts/<?= $post->id ?>/" method="POST">
+        <form id="post" action="/posts/<?= $post->id ?>/"
+            method="POST">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="csrf_token"
                 value="<?= $data['csrf_token'] ?>">
@@ -13,15 +14,15 @@ $post = $data['post'];
             <div class="mb-8">
                 <label for="title" class="font-bold before:content-['*'] before:text-red-500 before:pr-1">タイトル<small
                         class="pl-2">(最大100文字)</small></label>
-                <input id="title" type="text" name="title" placeholder=""
+                <input id="title" aria-describedby="post title" type="text" name="title" placeholder=""
                     class="border-gray-400 text-2xl font-bold w-full shadow-lg border rounded-lg bg-light-800 p-2"
                     value="<?= htmlspecialchars($post->title) ?>"
-                    required>
+                    required aria-required="true">
             </div>
 
             <div class="inline-block relative w-full mb-8">
                 <label class="block" for="tags" class="font-bold">タグ<small class="pl-2">(任意, 複数選択可)</small></label>
-                <select id="tags" name="tags[]" multiple
+                <select id="tags" aria-describedby="post tags" name="tags[]" multiple
                     class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg shadow-lg leading-tight focus:outline-none focus:shadow-outline">
                     <option value="general" <?= in_array('general', $data['tag_ids']) ? 'selected' : '' ?>>総合
                     </option>
@@ -66,14 +67,15 @@ $post = $data['post'];
 
                 <div class="flex items-start gap-4">
                     <span class="relative">
-                        <a href="/posts/<?= $post->id ?>/"
+                        <a aria-label="キャンセル"
+                            href="/posts/<?= $post->id ?>/"
                             class="before:absolute before:-right-0.5 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['キャンセル'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block">
                             <img class="h-10 w-10" src="/assets/img/cancel.png">
                         </a>
                     </span>
 
                     <span class="relative">
-                        <button type="submit"
+                        <button type="submit" aria-label="変更を保存する"
                             class="before:absolute before:-right-0.5 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['保存'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block">
                             <img class=" h-10 w-10" src="/assets/img/save.png">
                         </button>
@@ -86,9 +88,9 @@ $post = $data['post'];
             <p>
             <div>
                 <label for="content" class="font-bold before:content-['*'] before:text-red-500 before:pr-1">本文</label>
-                <textarea id="content" name="content" placeholder="" rows="6"
-                    class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2"
-                    required><?= htmlspecialchars($post->content) ?></textarea>
+                <textarea id="content" aria-describedby="post content" name="content" placeholder="" rows="6"
+                    class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required
+                    aria-required="true"><?= htmlspecialchars($post->content) ?></textarea>
             </div>
             </p>
         </form>
