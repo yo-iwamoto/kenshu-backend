@@ -3,8 +3,9 @@
 namespace App\lib;
 
 use App\lib\Request;
-use App\models\User;
 use App\views\ApplicationView;
+
+use Closure;
 use Exception;
 
 abstract class Controller
@@ -14,7 +15,7 @@ abstract class Controller
     // テンプレートに渡される値
     protected array $data = [];
 
-    protected function addData(string $key, mixed $value)
+    protected function setData(string $key, mixed $value)
     {
         $this->data = array_merge($this->data, array($key => $value));
     }
@@ -65,14 +66,12 @@ abstract class Controller
     protected function view(Request $request, string $dir, string $name)
     {
         $is_authenticated = $request->isAuthenticated();
-        $this->addData('is_authenticated', $is_authenticated);
-        $this->addData('current_user', $is_authenticated ? User::getById($request->getSession('user_id')) : null);
-
+        $this->setData('is_authenticated', $is_authenticated);
 
         // CSRF token の生成・セット
         $csrf_token = bin2hex(random_bytes(32));
         $request->setSession('csrf_token', $csrf_token);
-        $this->addData('csrf_token', $csrf_token);
+        $this->setData('csrf_token', $csrf_token);
 
         $data  = $this->data;
 
@@ -90,55 +89,96 @@ abstract class Controller
         $this->beforeAction($request);
 
         if ($request->method === 'POST' || $request->method === 'PUT') {
-            self::validateCsrfToken($request);
+            $this->validateCsrfToken($request);
         }
 
         // 静的なルート
         switch ([$request->method, $inner_path]) {
             case ['GET', '/']:
-                $this->index($request);
-                $this->view($request, $this->view_dir, 'index');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->index($request),
+                    template: 'index',
+                );
                 break;
 
             case ['GET', '/new']:
-                $this->new($request);
-                $this->view($request, $this->view_dir, 'new');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->new($request),
+                    template: 'new',
+                );
                 break;
 
             case ['POST', '/']:
-                $this->create($request);
-                $this->view($request, $this->view_dir, 'index');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->create($request),
+                    template: 'index',
+                    error_template: 'new',
+                );
         }
 
         // id を含むルート
         $id = explode('/', $inner_path)[1];
 
         if (str_contains($inner_path, '/edit')) {
-            $this->edit($request, $id);
-            $this->view($request, $this->view_dir, 'edit');
+            $this->execAction(
+                $request,
+                callback: fn () => $this->edit($request, $id),
+                template: 'edit',
+            );
         }
 
         switch ($request->method) {
             case 'GET':
-                $this->show($request, $id);
-                $this->view($request, $this->view_dir, 'show');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->show($request, $id),
+                    template: 'show',
+                );
                 break;
 
             case 'PUT':
-                $this->update($request, $id);
-                $this->view($request, $this->view_dir, 'show');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->update($request, $id),
+                    template: 'show',
+                    error_template: 'edit',
+                );
                 break;
 
             case 'DELETE':
-                $this->destroy($request, $id);
-                $this->view($request, $this->view_dir, 'index');
+                $this->execAction(
+                    $request,
+                    callback: fn () => $this->destroy($request, $id),
+                    template: 'index',
+                    error_template: 'index'
+                );
         }
     }
 
-    public static function validateCsrfToken(Request $request)
+    public function validateCsrfToken(Request $request)
     {
         if ($request->getSession('csrf_token') !== $request->post['csrf_token']) {
-            throw new Exception('csrf check failed');
+            $this->setData('http_referer', $request->server['HTTP_REFERER']);
+            $this->view($request, 'utils/', 'csrf_error');
+        }
+    }
+
+    /**
+     * callback を実行し、発生した例外を処理する
+     */
+    private function execAction(Request $request, Closure $callback, string $template, ?string $error_template = null)
+    {
+        try {
+            $callback();
+
+            $this->view($request, $this->view_dir, $template);
+        } catch (Exception | ServerException $exception) {
+            $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
+
+            $this->view($request, $this->view_dir, $error_template !== null ? $error_template : $template);
         }
     }
 }

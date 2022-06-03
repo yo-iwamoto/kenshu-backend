@@ -1,0 +1,11 @@
+INSERT INTO tags (id, name, created_at) VALUES ('general', '総合', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('technology', 'テクノロジー', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('mobile', 'モバイル', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('app', 'アプリ', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('entertainment', 'エンタメ', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('beauty', 'ビューティー', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('fashion', 'ファッション', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('life_style', 'ライフスタイル', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('business', 'ビジネス', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('gourmet', 'グルメ', NOW());
+INSERT INTO tags (id, name, created_at) VALUES ('sports', 'スポーツ', NOW());

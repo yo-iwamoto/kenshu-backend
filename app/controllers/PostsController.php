@@ -2,62 +2,79 @@
 namespace App\controllers;
 
 use App\lib\Controller;
-use App\models\Post;
+use App\lib\ServerException;
+use App\models\Tag;
+use App\services\PostService;
+
+use Exception;
 
 class PostsController extends Controller
 {
     const VIEW_DIR = 'posts/';
-    
-    protected function index($_)
-    {
-        $posts = Post::getAll();
 
-        $this->addData('posts', $posts);
+    protected function index($request)
+    {
+        $posts = PostService::index();
+
+        $this->setData('posts', $posts);
     }
 
     protected function show($_, $id)
     {
-        $post = Post::getById($id);
+        $post = PostService::get($id);
 
-        $this->addData('post', $post);
+        $this->setData('post', $post);
     }
 
     protected function create($request)
     {
-        $current_user = $request->getCurrentUser();
-        if ($current_user === null) {
-            return http_response_code(403);
-        }
-        
-        Post::create(
-            user_id: $current_user->id,
-            title: $request->post['title'],
-            content: $request->post['content'],
-        );
+        try {
+            $post = PostService::create($request);
 
-        $request->redirect('/posts');
+            $request->redirect("/posts/{$post->id}");
+        } catch (Exception | ServerException $exception) {
+            $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
+
+            // TODO: 別の方法で対処 (一覧画面と新規作成画面が同一なので、エラー時にも posts を取得する必要がある問題)
+            $posts = PostService::index();
+            $this->setData('posts', $posts);
+
+            $this->view($request, self::VIEW_DIR, 'index');
+        }
     }
 
     protected function edit($request, $id)
     {
-        $post = Post::getById($id);
+        $post = PostService::get($id);
+        $this->setData('post', $post);
 
-        $this->addData('post', $post);
+        $tag_ids = array_map(fn (Tag $tag) => $tag->id, $post->tags);
+        $this->setData('tag_ids', $tag_ids);
     }
 
     protected function update($request, $id)
     {
-        Post::getById($id)->update(
-            title: $request->post['title'],
-            content: $request->post['content'],
-        );
-        
-        $request->redirect("/posts/$id/");
+        try {
+            PostService::update($request, $id);
+
+            $request->redirect("/posts/$id/");
+        } catch (Exception | ServerException $exception) {
+            $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
+
+            // TODO: 別の方法で対処 (一覧画面と新規作成画面が同一なので、エラー時にも posts を取得する必要がある問題)
+            $post = PostService::get($id);
+            $this->setData('post', $post);
+
+            $tag_ids = array_map(fn (Tag $tag) => $tag->id, $post->tags);
+            $this->setData('tag_ids', $tag_ids);
+
+            $this->view($request, self::VIEW_DIR, 'edit');
+        }
     }
 
     protected function destroy($request, $id)
     {
-        Post::getById($id)->destroy();
+        PostService::destroy($id);
 
         $request->redirect('/posts/');
     }

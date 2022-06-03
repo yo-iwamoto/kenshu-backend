@@ -2,13 +2,12 @@
 
 use App\lib\Request;
 use App\lib\Router;
-use Dotenv\Dotenv;
-
 use App\controllers\HomeController;
-use App\controllers\LogoutController;
 use App\controllers\PostsController;
 use App\controllers\SessionsController;
 use App\controllers\UsersController;
+
+use Dotenv\Dotenv;
 
 class Initializer
 {
@@ -48,10 +47,6 @@ class Initializer
             '/users' => function () {
                 return new UsersController('users/');
             },
-
-            '/logout' => function () {
-                return new LogoutController('logout/');
-            }
         ));
 
         $request = new Request();

@@ -12,14 +12,25 @@
             <?= $post->title ?>
         </h1>
 
+        <?php if (count($data['post']->tags) !== 0) : ?>
+        <div class="flex items-center flex-wrap gap-2 mb-4 max-w-lg">
+            <?php foreach ($data['post']->tags as $tag) : ?>
+            <a href="#"
+                class="py-0.5 px-1.5 text-sm bg-gray-300 hover:bg-gray-200 transition-colors shadow-md rounded-lg">
+                <?= $tag->name ?>
+            </a>
+            <?php endforeach ?>
+        </div>
+        <?php endif ?>
+
         <div class="flex justify-between items-end">
             <div>
                 <p class="flex items-center mb-1">
                     <img class="h-5 w-5 rounded-full mr-1"
-                        src="<?= $post->user_profile_image_url ?>"
-                        alt="<?= $post->user_name ?>">
+                        src="<?= $post->user__profile_image_url ?>"
+                        alt="<?= $post->user__name ?>">
                     <span class="text-gray-600 text-sm">
-                        <?= $post->user_name ?>
+                        <?= $post->user__name ?>
                     </span>
                 </p>
                 <p class="text-sm">

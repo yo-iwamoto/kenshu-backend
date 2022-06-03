@@ -2,7 +2,7 @@
 namespace App\controllers;
 
 use App\lib\Controller;
-use App\services\SignupService;
+use App\services\UserService;
 
 class UsersController extends Controller
 {
@@ -18,14 +18,11 @@ class UsersController extends Controller
 
     protected function new($_)
     {
-        // TODO: CSRF token の生成、データ格納
     }
 
     protected function create($request)
     {
-        // TODO: CSRF token の検証
-
-        SignupService::execute($request);
+        UserService::signup($request);
 
         // 記事一覧画面へリダイレクト
         $request->redirect('/posts');

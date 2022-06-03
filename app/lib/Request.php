@@ -3,6 +3,7 @@
 namespace App\lib;
 
 use App\models\User;
+use App\services\UserService;
 
 /**
  * グローバル定数から Request オブジェクトを作成する
@@ -13,7 +14,6 @@ class Request
     public readonly ?array $get;
     public readonly ?array $post;
     public readonly ?array $files;
-    public readonly ?array $session;
     public readonly ?array $request;
 
     public string $method;
@@ -25,24 +25,23 @@ class Request
         $this->get = $_GET;
         $this->post = $_POST;
         $this->files = $_FILES;
-        $this->session = $_SESSION;
         $this->request = $_REQUEST;
 
         $this->method = $this->server['REQUEST_METHOD'];
         $this->path = $this->server['REQUEST_URI'];
     }
 
-    public function getSession(string $key)
+    public function getSession(string $key): string
     {
         return $_SESSION[$key];
     }
 
-    public function setSession(string $key, string $value)
+    public function setSession(string $key, string $value): void
     {
         $_SESSION[$key] = $value;
     }
 
-    public function unsetSession(string $key)
+    public function unsetSession(string $key): void
     {
         unset($_SESSION[$key]);
     }
@@ -56,30 +55,33 @@ class Request
     }
 
     /**
-     * セッションの user_id から User を取得して返す
-     */
-    public function getCurrentUser()
-    {
-        if ($this->isAuthenticated()) {
-            return User::getById($this->getSession('user_id'));
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * check if the $_SESSION has 'user_id'
+     * `$_SESSION` に `user_id` があるかどうか
      */
     public function isAuthenticated()
     {
         return isset($_SESSION['user_id']);
     }
 
-    /**
-     * call header for 'Location' to the path. default status_code is 302
-     */
-    public function redirect(string $path, int $status_code = 302)
+    public function getCurrentUserId(): string
     {
-        return header('Location: ' . $_ENV['APP_URL'] . $path, true, $status_code);
+        if (!$this->isAuthenticated()) {
+            throw ServerException::unauthorized(display_text: 'ログインしてください');
+        }
+        
+        return $this->getSession('user_id');
+    }
+
+    public function getCurrentUser(): User
+    {
+        if (!$this->isAuthenticated()) {
+            throw ServerException::unauthorized(display_text: 'ログインしてください');
+        }
+        
+        return UserService::get($this->getSession('user_id'));
+    }
+
+    public function redirect(string $path, int $status_code = 302): void
+    {
+        header('Location: ' . $_ENV['APP_URL'] . $path, true, $status_code);
     }
 }

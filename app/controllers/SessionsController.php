@@ -2,7 +2,7 @@
 namespace App\controllers;
 
 use App\lib\Controller;
-use App\models\User;
+use App\services\SessionService;
 
 class SessionsController extends Controller
 {
@@ -22,22 +22,16 @@ class SessionsController extends Controller
 
     protected function create($request)
     {
-        // TODO: CSRF token の検証
-
-        // TODO: バリデーション
-
-        $user = User::getByEmail($request->post['email']);
-        if ($user->login($request->post['password'])) {
-            $request->setSession('user_id', $user->id);
-
-            return $request->redirect('/');
-        } else {
-            // TODO: エラーのフィードバック
-            $this->view($request, self::VIEW_DIR, 'new');
-        }
-
+        SessionService::login($request);
 
         // 記事一覧画面へリダイレクト
         return $request->redirect('/posts');
+    }
+
+    protected function destroy($request, $_)
+    {
+        SessionService::logout($request);
+
+        return $request->redirect('/');
     }
 }
