@@ -1,5 +1,5 @@
 <?php
-namespace App\services;
+namespace App\services\session;
 
 use App\lib\PDOFactory;
 use App\lib\Request;
@@ -8,9 +8,9 @@ use App\models\User;
 
 use Exception;
 
-class SessionService
+class LoginService
 {
-    public static function login(Request $request)
+    public static function execute(Request $request)
     {
         $pdo = PDOFactory::create();
 
@@ -28,10 +28,5 @@ class SessionService
 
             throw $exception;
         }
-    }
-
-    public static function logout(Request $request)
-    {
-        $request->unsetSession('user_id');
     }
 }
