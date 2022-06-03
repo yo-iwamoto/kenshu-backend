@@ -18,15 +18,16 @@
                             class="font-bold before:content-['*'] before:text-red-500 before:pr-1">タイトル<small
                                 class="pl-2">(最大100文字)</small></label>
                         <input id="title" aria-labelledby="post title" type="text" name="title" placeholder=""
-                            class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required>
+                            class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required
+                            aria-required="true">
                     </div>
 
                     <div>
                         <label for="content"
                             class="font-bold before:content-['*'] before:text-red-500 before:pr-1">本文</label>
                         <textarea id="content" aria-labelledby="post content" name="content" placeholder="" rows="6"
-                            class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2"
-                            required></textarea>
+                            class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required
+                            aria-required="true"></textarea>
                     </div>
 
                     <div class="inline-block relative w-full">
@@ -109,7 +110,7 @@
                                 <input type="hidden" name="csrf_token"
                                     value="<?= $data['csrf_token'] ?>">
 
-                                <button
+                                <button aria-label="記事を削除する"
                                     class="before:absolute before:-right-1/2 before:-top-12 before:text-sm before:hidden before:rounded-lg before:shadow-lg before:content-['削除'] before:text-white before:whitespace-nowrap before:p-2 before:bg-black before:opacity-60 hover:before:inline-block"
                                     type="submit">
                                     <img class="h-6 w-6" src="/assets/img/trash.png">

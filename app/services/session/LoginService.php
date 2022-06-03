@@ -1,18 +1,18 @@
 <?php
-namespace App\services;
+namespace App\services\session;
 
-use App\lib\PDOFactory;
 use App\lib\Request;
 use App\lib\ServerException;
 use App\models\User;
+use App\services\concerns\Service;
 
 use Exception;
 
-class SessionService
+class LoginService extends Service
 {
-    public static function login(Request $request)
+    public function execute(Request $request)
     {
-        $pdo = PDOFactory::create();
+        $pdo = $this->pdo;
 
         try {
             $user = User::getByEmail($pdo, $request->post['email']);
@@ -28,10 +28,5 @@ class SessionService
 
             throw $exception;
         }
-    }
-
-    public static function logout(Request $request)
-    {
-        $request->unsetSession('user_id');
     }
 }

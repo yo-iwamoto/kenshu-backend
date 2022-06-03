@@ -4,20 +4,24 @@
 
         <hr class="mb-6">
 
-        <form method="POST" action="/sessions/" class="flex flex-col gap-8 mb-10" enctype="multipart/form-data">
+        <form id="login-info" method="POST" action="/sessions/" class="flex flex-col gap-8 mb-10"
+            enctype="multipart/form-data">
             <input type="hidden" name="csrf_token"
                 value="<?= $data['csrf_token'] ?>">
 
             <div>
                 <label for="email" class="font-bold">メールアドレス</label>
-                <input id="email" type="email" name="email" placeholder="sample@example.com"
-                    class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required>
+                <input id="email" aria-describedby="login-info email" type="email" name="email"
+                    placeholder="sample@example.com"
+                    class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required
+                    aria-required="true">
             </div>
 
             <div>
                 <label for="password" class="font-bold">パスワード</label>
-                <input id="password" type="password" name="password"
-                    class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required>
+                <input id="password" aria-describedby="login-info password" type="password" name="password"
+                    class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required
+                    aria-required="true">
             </div>
 
             <button type="submit"

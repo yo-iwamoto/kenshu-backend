@@ -3,7 +3,7 @@
 namespace App\lib;
 
 use App\models\User;
-use App\services\UserService;
+use App\services\user\GetService as UserGetService;
 
 /**
  * グローバル定数から Request オブジェクトを作成する
@@ -77,7 +77,8 @@ class Request
             throw ServerException::unauthorized(display_text: 'ログインしてください');
         }
         
-        return UserService::get($this->getSession('user_id'));
+        $service = new UserGetService();
+        return $service->execute($this->getSession('user_id'));
     }
 
     public function redirect(string $path, int $status_code = 302): void
