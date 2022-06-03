@@ -7,48 +7,66 @@
                     <img src="/assets/img/arrow.png">
                 </button>
             </div>
-            <form id="js-toggle-body" class="flex flex-col h-auto gap-8 overflow-hidden origin-top transition-all"
-                action="/posts/" method="POST">
-                <input type="hidden" name="csrf_token"
-                    value="<?= $data['csrf_token'] ?>" />
+            <div id="js-toggle-body">
+                <form id="post" class="flex flex-col h-auto gap-8 overflow-hidden origin-top transition-all"
+                    action="/posts/" method="POST">
+                    <input type="hidden" name="csrf_token"
+                        value="<?= $data['csrf_token'] ?>" />
 
-                <div>
-                    <label for="title" class="font-bold before:content-['*'] before:text-red-500 before:pr-1">タイトル<small
-                            class="pl-2">(最大100文字)</small></label>
-                    <input id="title" type="text" name="title" placeholder=""
-                        class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required>
-                </div>
+                    <div>
+                        <label for="title"
+                            class="font-bold before:content-['*'] before:text-red-500 before:pr-1">タイトル<small
+                                class="pl-2">(最大100文字)</small></label>
+                        <input id="title" aria-labelledby="post title" type="text" name="title" placeholder=""
+                            class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required>
+                    </div>
 
-                <div>
-                    <label for="content"
-                        class="font-bold before:content-['*'] before:text-red-500 before:pr-1">本文</label>
-                    <textarea id="content" name="content" placeholder="" rows="6"
-                        class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2" required></textarea>
-                </div>
+                    <div>
+                        <label for="content"
+                            class="font-bold before:content-['*'] before:text-red-500 before:pr-1">本文</label>
+                        <textarea id="content" aria-labelledby="post content" name="content" placeholder="" rows="6"
+                            class="border-gray-400 w-full shadow-lg border rounded-lg bg-light-800 p-2"
+                            required></textarea>
+                    </div>
 
-                <div class="inline-block relative w-full">
-                    <label class="block" for="tags" class="font-bold">タグ<small class="pl-2">(任意, 複数選択可)</small></label>
-                    <select id="tags" name="tags[]" multiple
-                        class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg shadow-lg leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="general">総合</option>
-                        <option value="technology">テクノロジー</option>
-                        <option value="mobile">モバイル</option>
-                        <option value="app">アプリ</option>
-                        <option value="entertainment">エンタメ</option>
-                        <option value="beauty">ビューティー</option>
-                        <option value="fashion">ファッション</option>
-                        <option value="life_style">ライフスタイル</option>
-                        <option value="business">ビジネス</option>
-                        <option value="gourmet">グルメ</option>
-                        <option value="sports">スポーツ</option>
-                    </select>
-                </div>
+                    <div class="inline-block relative w-full">
+                        <label class="block" for="tags" class="font-bold">タグ<small class="pl-2">(任意,
+                                複数選択可)</small></label>
+                        <select id="tags" aria-labelledby="post tags" name="tags[]" multiple
+                            class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded-lg shadow-lg leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="general">総合</option>
+                            <option value="technology">テクノロジー</option>
+                            <option value="mobile">モバイル</option>
+                            <option value="app">アプリ</option>
+                            <option value="entertainment">エンタメ</option>
+                            <option value="beauty">ビューティー</option>
+                            <option value="fashion">ファッション</option>
+                            <option value="life_style">ライフスタイル</option>
+                            <option value="business">ビジネス</option>
+                            <option value="gourmet">グルメ</option>
+                            <option value="sports">スポーツ</option>
+                        </select>
+                    </div>
 
-                <div class="flex justify-end">
-                    <button type="submit"
-                        class="rounded-lg w-16 text-white bg-teal-600 hover:bg-teal-500 transition-colors py-2 text-sm font-bold">投稿</button>
-                </div>
-            </form>
+                    <div class="flex flex-col">
+                        <label class="font-bold" for="images" class="block">
+                            <span>添付画像</span>
+                            <small class="pl-2">(複数選択可・png, jpg, gif 形式のファイルを指定してください)</small>
+                        </label>
+                        <input id="images" aria-describedby="post images" type="file" accept="image/*" name="images"
+                            multiple>
+                    </div>
+
+                    <input id="thumbnail-image-index" type="hidden" class="-mb-8" name="thumbnail-image-index">
+
+                    <div id="js-preview-container" class="-mb-4 flex gap-2"></div>
+
+                    <div class="flex justify-end">
+                        <button type="submit"
+                            class="rounded-lg w-16 text-white bg-teal-600 hover:bg-teal-500 transition-colors py-2 text-sm font-bold">投稿</button>
+                    </div>
+                </form>
+            </div>
         </section>
 
         <hr class="mb-6">
@@ -83,8 +101,6 @@
                                 <span class="text-xs text-gray-600">
                                     <?= htmlspecialchars($post->user__name) ?>
                                 </span>
-
-
                             </p>
                             <form class="relative"
                                 action="/posts/<?= $post->id ?>/"
@@ -110,3 +126,4 @@
     </div>
 </div>
 <script src=" /assets/js/toggle.js"></script>
+<script src=" /assets/js/preview-multiple-images.js"></script>
