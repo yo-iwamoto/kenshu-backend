@@ -63,6 +63,19 @@
             </div>
         </div>
 
+        <?php if (count($data['post']->images) !== 0) : ?>
+        <hr class="mt-4 pb-10">
+
+        <p class="font-bold text-xl">画像</p>
+
+        <div class="flex flex-wrap gap-4">
+            <?php foreach ($data['post']->images as $image) : ?>
+            <img src="<?= $image->image_url ?>" alt="添付画像"
+                class="h-32 w-32">
+            <?php endforeach ?>
+        </div>
+        <?php endif ?>
+
         <hr class="mt-4 pb-10">
 
         <p>

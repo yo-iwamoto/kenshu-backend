@@ -3,6 +3,9 @@ namespace App\services\common;
 
 class ValidateUploadedImageService
 {
+    /**
+     * file requires 'tmp_name' & 'size' keys
+     */
     public static function execute(array $file)
     {
         // ファイル形式の確認

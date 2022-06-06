@@ -62,6 +62,10 @@ class Request
         return isset($_SESSION['user_id']);
     }
 
+    /**
+     * @return string $_SESSION['user_id']
+     * @throws ServerException
+     */
     public function getCurrentUserId(): string
     {
         if (!$this->isAuthenticated()) {
@@ -71,6 +75,10 @@ class Request
         return $this->getSession('user_id');
     }
 
+    /**
+     * @return User
+     * @throws ServerException
+     */
     public function getCurrentUser(): User
     {
         if (!$this->isAuthenticated()) {
