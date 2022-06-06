@@ -7,9 +7,9 @@
                     <img src="/assets/img/arrow.png">
                 </button>
             </div>
-            <div id="js-toggle-body">
-                <form id="post" class="flex flex-col h-auto gap-8 overflow-hidden origin-top transition-all"
-                    action="/posts/" method="POST">
+            <div id="js-toggle-body" class="overflow-hidden origin-top">
+                <form id="post" class="flex flex-col h-auto gap-8" action="/posts/" method="POST"
+                    enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token"
                         value="<?= $data['csrf_token'] ?>" />
 
@@ -54,11 +54,11 @@
                             <span>添付画像</span>
                             <small class="pl-2">(複数選択可・png, jpg, gif 形式のファイルを指定してください)</small>
                         </label>
-                        <input id="images" aria-describedby="post images" type="file" accept="image/*" name="images"
+                        <input id="images" aria-describedby="post images" type="file" accept="image/*" name="images[]"
                             multiple>
                     </div>
 
-                    <input id="thumbnail-image-index" type="hidden" class="-mb-8" name="thumbnail-image-index">
+                    <input id="thumbnail_image_index" type="hidden" class="-mb-8" name="thumbnail_image_index">
 
                     <div id="js-preview-container" class="-mb-4 flex gap-2"></div>
 

@@ -2,9 +2,9 @@ const main = () => {
   const $imageInput = document.getElementById('images');
   const $previewContainer = document.getElementById('js-preview-container');
   const $form = document.getElementById('post');
-  const $thumbnailImageIndexField = document.getElementById('thumbnail-image-index');
+  const $thumbnailImageIndexField = document.getElementById('thumbnail_image_index');
 
-  if ($imageInput === null || $previewContainer === null || $form === null) {
+  if ($imageInput === null || $previewContainer === null || $form === null || $thumbnailImageIndexField === null) {
     throw new Error();
   }
 
@@ -34,7 +34,7 @@ const main = () => {
 
       if (previewImages.length === 0) {
         if ($thumbnailImageIndexField instanceof HTMLInputElement) {
-          $thumbnailImageIndexField.value = index;
+          $thumbnailImageIndexField.value = 0;
         }
       }
 
