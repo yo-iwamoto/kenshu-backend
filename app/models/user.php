@@ -29,9 +29,6 @@ class User
 
     /**
      * データからレコードを作成する
-     * @param string $name
-     * @param string $email
-     * @param string $password
      * @param ?string $profile_image_url
      */
     public static function create(PDO $pdo, CreateUserDto $dto)
@@ -39,7 +36,7 @@ class User
         self::validate($dto);
 
         try {
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $password_hash = password_hash($dto->password, PASSWORD_DEFAULT);
             $statement = $pdo->prepare(
                 'INSERT INTO users
                     (name, email, password_hash, profile_image_url, created_at)
