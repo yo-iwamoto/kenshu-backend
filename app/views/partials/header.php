@@ -23,6 +23,14 @@ class Header
         </button>
     </form>
 
+    <?php else : ?>
+    <div class="flex justify-center gap-8">
+        <a class="text-white px-4 py-2 bg-teal-600 inline-block hover:bg-teal-500 rounded-lg transition-colors"
+            href="/users/new/">新規会員登録</a>
+        <a class="text-teal-600 px-4 py-2 border border-teal-600 inline-block hover:bg-teal-50 rounded-lg transition-colors"
+            href="/sessions/new/">ログイン</a>
+    </div>
+
     <?php endif ?>
 
 </header>

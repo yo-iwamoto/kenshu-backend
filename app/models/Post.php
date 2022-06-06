@@ -20,6 +20,7 @@ class Post
     public readonly string $created_at;
 
     // TODO: User で管理する
+    public readonly string $user__id;
     public readonly string $user__name;
     public readonly string $user__profile_image_url;
 
@@ -37,6 +38,7 @@ class Post
         $this->created_at = $row['created_at'];
 
         // TODO: User で管理する
+        $this->user__id = $row['user__id'];
         $this->user__name = $row['user__name'];
         $this->user__profile_image_url = $row['user__profile_image_url'];
     }
@@ -83,6 +85,7 @@ class Post
                 'SELECT
                     posts.*,
                     post_images.image_url AS thumbnail_post_image_url,
+                    users.id AS user__id,
                     users.name AS user__name,
                     users.profile_image_url AS user__profile_image_url,
                     post_images
@@ -115,6 +118,7 @@ class Post
             $statement = $pdo->prepare(
                 'SELECT
                     posts.*,
+                    users.id AS user__id,
                     users.name AS user__name,
                     users.profile_image_url AS user__profile_image_url,
                     post_images.image_url AS thumbnail_post_image_url

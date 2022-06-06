@@ -39,6 +39,7 @@
                 </p>
             </div>
 
+            <?php if ($data['is_authenticated'] && $post->user__id === $data['current_user']->id) : ?>
             <div class="flex items-start gap-4">
                 <form class="relative"
                     action="/posts/<?= $post->id ?>/" method="POST">
@@ -61,6 +62,7 @@
                     </a>
                 </span>
             </div>
+            <?php endif ?>
         </div>
 
         <?php if (count($data['post']->images) !== 0) : ?>
