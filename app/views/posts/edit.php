@@ -6,7 +6,7 @@ $post = $data['post'];
 <div class="mt-10 mx-8">
     <div class="max-w-5xl mx-auto">
         <form id="post" action="/posts/<?= $post->id ?>/"
-            method="POST">
+            enctype="multipart/form-data" method="POST">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="csrf_token"
                 value="<?= $data['csrf_token'] ?>">
@@ -83,6 +83,48 @@ $post = $data['post'];
                 </div>
             </div>
 
+
+            <div id="js-images-display">
+                <hr class="mt-4 pb-10">
+
+                <p class="font-bold text-xl">画像</p>
+
+                <?php if (count($data['post']->images) !== 0) : ?>
+                <div class="flex flex-wrap gap-4">
+                    <?php foreach ($data['post']->images as $image) : ?>
+                    <img src="<?= $image->image_url ?>" alt="添付画像"
+                        class="h-32 w-32">
+                    <?php endforeach ?>
+                </div>
+                <?php else : ?>
+                <p>画像はありません</p>
+                <?php endif ?>
+
+                <button type="button" id="js-images-edit" class="border p-2 mt-4">画像を編集する</button>
+            </div>
+
+            <div id="js-images-form" hidden>
+                <hr class="mt-4 pb-10">
+
+                <div id="js-images-container" class="flex flex-col">
+                    <label class="font-bold" for="images" class="block">
+                        <span>添付画像</span>
+                        <small class="pl-2">(複数選択可・png, jpg, gif 形式のファイルを指定してください)</small>
+                    </label>
+
+                    <input id="images" aria-describedby="post images" type="file" accept="image/*" name="images[]"
+                        multiple>
+                </div>
+
+                <input id="thumbnail_image_index" type="hidden" class="-mb-8" name="thumbnail_image_index">
+
+                <div id="js-preview-container" class="my-4 flex gap-2"></div>
+
+                <p class="text-red-600">※ 現在設定されている画像は全て削除された上で、このフォームで指定した画像が設定されます</p>
+                <button type="button" id="js-images-cancel-edit" class="border p-2 mt-4">画像の編集を破棄する</button>
+            </div>
+
+
             <hr class="mt-4 pb-10">
 
             <p>
@@ -96,3 +138,4 @@ $post = $data['post'];
         </form>
     </div>
 </div>
+<script src="/assets/js/edit-post-images.js"></script>

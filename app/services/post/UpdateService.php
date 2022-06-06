@@ -5,10 +5,14 @@ use App\dto\UpdatePostDto;
 use App\lib\Request;
 use App\lib\ServerException;
 use App\models\Post;
+use App\models\PostImage;
 use App\models\PostToTag;
+use App\services\common\ValidateUploadedImageService;
 use App\services\concerns\Service;
 
 use Exception;
+use PDO;
+use Ramsey\Uuid\Nonstandard\Uuid;
 
 class UpdateService extends Service
 {
@@ -47,7 +51,48 @@ class UpdateService extends Service
                 PostToTag::create($pdo, $id, $tag_id);
             }
 
+            $current_post_image_urls = [];
+            if (isset($request->files['images'])) {
+                // 現在の画像のパスをデータ削除前に取得しておき、トランザクションのコミット後に削除を試行
+                // (トランザクションをロールバックした場合、画像削除はロールバックできないため)
+                $current_post_image_urls = array_map(fn ($post_image) => $post_image->image_url, PostImage::getAllByPostId($pdo, $id));
+                
+                // サムネイルを NULL に更新
+                $post->updateThumbnailPostImageId($pdo, null);
+                // DB から PostImage を削除
+                PostImage::bulkDestroyByPostId($pdo, $id);
+
+                // 画像の作成
+                $uploaded_images = $request->files['images'];
+                // アップロードされた枚数分繰り返し
+                // TODO: O(n) の回避
+                for ($index = 0; $index < count($uploaded_images['tmp_name']); $index ++) {
+                    $file = array(
+                        'name' => $uploaded_images['name'][$index],
+                        'tmp_name' => $uploaded_images['tmp_name'][$index],
+                        'size' => $uploaded_images['size'][$index],
+                    );
+                    ValidateUploadedImageService::execute($file);
+                    // 画像パスの指定
+                    $file_path = '/assets/img/posts/' . Uuid::uuid4() . '_' . $file['name'];
+    
+                    $post_image_id = PostImage::create($pdo, $id, $file_path);
+                    // 画像の保存
+                    move_uploaded_file($file['tmp_name'], '../public' . $file_path);
+    
+                    if ($index === intval($request->post['thumbnail_image_index'])) {
+                        $post->updateThumbnailPostImageId($pdo, $post_image_id);
+                    }
+                }
+            }
+
+
             $pdo->commit();
+
+            // 変更前の画像ファイルの削除
+            foreach ($current_post_image_urls as $url) {
+                unlink('../public' . $url);
+            }
 
             $post->getTags($pdo);
 
