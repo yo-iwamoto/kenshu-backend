@@ -9,8 +9,15 @@ use PDOException;
 
 class PostImage
 {
-    public readonly string $post_id;
+    public readonly string $id;
     public readonly string $image_url;
+
+
+    private function __construct(array $row)
+    {
+        $this->id = strval($row['id']);
+        $this->image_url = $row['image_url'];
+    }
 
     /**
      * @return string 作成されたレコードのid
@@ -31,6 +38,32 @@ class PostImage
             $statement->execute();
 
             return $statement->fetch()['id'];
+        } catch (Exception | ServerException $exception) {
+            var_dump($exception);
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
+
+            throw ServerException::internal($exception);
+        }
+    }
+
+    public static function getAllByPostId(PDO $pdo, string $post_id)
+    {
+        try {
+            $statement = $pdo->prepare(
+                'SELECT
+                    post_images.id,
+                    post_images.image_url
+                FROM post_images
+                INNER JOIN posts ON posts.id = post_images.post_id
+                WHERE posts.id = :post_id
+                '
+            );
+            $statement->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+            $statement->execute();
+
+            return array_map(fn ($row) => new self($row), $statement->fetchAll());
         } catch (Exception | ServerException $exception) {
             var_dump($exception);
             if ($exception instanceof PDOException) {

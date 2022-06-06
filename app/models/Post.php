@@ -11,7 +11,7 @@ use Exception;
 
 class Post
 {
-    const NO_IMAGE_URL = 'assets/img/no-img.jpeg';
+    const NO_IMAGE_URL = '/assets/img/no-img.jpeg';
     
     public readonly string $id;
     public readonly string $thumbnail_url;
@@ -23,14 +23,15 @@ class Post
     public readonly string $user__name;
     public readonly string $user__profile_image_url;
 
-    // tag がない [] の状態と区別するため null
+    // 未取得と存在しない状態を区別するため nullable
     public ?array $tags = null;
+    public ?array $images = null;
 
     private function __construct(array $row)
     {
         $this->id = strval($row['id']);
-        // thumbnail_url は nullable のため、null のとき専用の画像の URL を指定する
-        $this->thumbnail_url = $row['thumbnail_url'] ?? self::NO_IMAGE_URL;
+        // thumbnail_post_image_url は nullable のため、null のとき専用の画像の URL を指定する
+        $this->thumbnail_url = $row['thumbnail_post_image_url'] === null ? self::NO_IMAGE_URL : $row['thumbnail_post_image_url'];
         $this->title = $row['title'];
         $this->content = $row['content'];
         $this->created_at = $row['created_at'];
@@ -83,7 +84,9 @@ class Post
                     posts.*,
                     post_images.image_url AS thumbnail_post_image_url,
                     users.name AS user__name,
-                    users.profile_image_url AS user__profile_image_url
+                    users.profile_image_url AS user__profile_image_url,
+                    post_images
+
                 FROM posts
                     INNER JOIN users ON posts.user_id = users.id
                     LEFT JOIN post_images ON post_images.id = posts.thumbnail_post_image_id
@@ -199,6 +202,16 @@ class Post
     public function getTags(PDO $pdo)
     {
         $this->tags = Tag::getAllByPostId($pdo, $this->id);
+    }
+
+    /**
+     * getAll などで一般化して JOIN できなかったためやむなくの実装;
+     * 複数件取得時に叩くと容易に N+1 になるので注意
+     * @throws ServerException
+     */
+    public function getImages(PDO $pdo)
+    {
+        $this->images = PostImage::getAllByPostId($pdo, $this->id);
     }
 
     /**

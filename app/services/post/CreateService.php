@@ -40,25 +40,28 @@ class CreateService extends Service
                 PostToTag::create($pdo, $post->id, $tag_id);
             }
 
-            // 画像の作成
-            $uploaded_images = $request->files['images'];
-            // アップロードされた枚数分繰り返し
-            // TODO: O(n) の回避
-            for ($index = 0; $index < count($uploaded_images['tmp_name']); $index ++) {
-                $file = array(
-                    'tmp_name' => $uploaded_images['tmp_name'][$index],
-                    'size' => $uploaded_images['size'][$index],
-                );
-                ValidateUploadedImageService::execute($file);
-                // 画像パスの指定
-                $file_path = '/assets/img/posts/' . Uuid::uuid4();
-
-                $post_image_id = PostImage::create($pdo, $post_id, $file_path);
-                // 画像の保存
-                move_uploaded_file($file['tmp_name'], '../public' . $file_path);
-
-                if ($index === intval($request->post['thumbnail_image_index'])) {
-                    $post->updateThumbnailPostImageId($pdo, $post_image_id);
+            if (isset($request->files['images'])) {
+                // 画像の作成
+                $uploaded_images = $request->files['images'];
+                // アップロードされた枚数分繰り返し
+                // TODO: O(n) の回避
+                for ($index = 0; $index < count($uploaded_images['tmp_name']); $index ++) {
+                    $file = array(
+                        'name' => $uploaded_images['name'][$index],
+                        'tmp_name' => $uploaded_images['tmp_name'][$index],
+                        'size' => $uploaded_images['size'][$index],
+                    );
+                    ValidateUploadedImageService::execute($file);
+                    // 画像パスの指定
+                    $file_path = '/assets/img/posts/' . Uuid::uuid4() . '_' . $file['name'];
+    
+                    $post_image_id = PostImage::create($pdo, $post_id, $file_path);
+                    // 画像の保存
+                    move_uploaded_file($file['tmp_name'], '../public' . $file_path);
+    
+                    if ($index === intval($request->post['thumbnail_image_index'])) {
+                        $post->updateThumbnailPostImageId($pdo, $post_image_id);
+                    }
                 }
             }
 

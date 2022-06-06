@@ -12,6 +12,7 @@ class GetService extends Service
 
         $post = Post::getById($pdo, $id);
         $post->getTags($pdo);
+        $post->getImages($pdo);
 
         return $post;
     }
