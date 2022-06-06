@@ -32,6 +32,12 @@ const main = () => {
     if (target instanceof HTMLInputElement) {
       const files = Array.from(target.files);
 
+      if (previewImages.length === 0) {
+        if ($thumbnailImageIndexField instanceof HTMLInputElement) {
+          $thumbnailImageIndexField.value = index;
+        }
+      }
+
       files.forEach((file, index) => {
         const $preview = document.createElement('img');
         $preview.setAttribute('src', window.URL.createObjectURL(file));
