@@ -226,4 +226,32 @@ class Post
             throw ServerException::invalidRequest(display_text: join('<br />', $errors));
         }
     }
+
+    /**
+     * @param string $post_image_id 作成済みの PostImage レコードの id
+     * @return void
+     * @throws ServerException
+     */
+    public function updateThumbnailPostImageId(PDO $pdo, string|null $post_image_id)
+    {
+        $post_id = $this->id;
+
+        try {
+            $statement = $pdo->prepare(
+                'UPDATE posts
+                SET thumbnail_post_image_id = :thumbnail_post_image_id
+                WHERE id = :id
+                '
+            );
+            $statement->bindParam(':thumbnail_post_image_id', $post_image_id, PDO::PARAM_NULL|PDO::PARAM_STR);
+            $statement->bindParam(':id', $post_id, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (Exception | PDOException $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
+
+            throw ServerException::internal($exception);
+        }
+    }
 }
