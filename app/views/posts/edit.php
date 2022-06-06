@@ -6,7 +6,7 @@ $post = $data['post'];
 <div class="mt-10 mx-8">
     <div class="max-w-5xl mx-auto">
         <form id="post" action="/posts/<?= $post->id ?>/"
-            method="POST">
+            enctype="multipart/form-data" method="POST">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="csrf_token"
                 value="<?= $data['csrf_token'] ?>">

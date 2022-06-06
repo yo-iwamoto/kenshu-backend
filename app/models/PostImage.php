@@ -39,7 +39,6 @@ class PostImage
 
             return $statement->fetch()['id'];
         } catch (Exception | ServerException $exception) {
-            var_dump($exception);
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -65,7 +64,6 @@ class PostImage
 
             return array_map(fn ($row) => new self($row), $statement->fetchAll());
         } catch (Exception | ServerException $exception) {
-            var_dump($exception);
             if ($exception instanceof PDOException) {
                 throw ServerException::database($exception);
             }
@@ -80,6 +78,22 @@ class PostImage
             $statement = $pdo->prepare('DELETE FROM post_images WHERE id = :id');
     
             $statement->bindParam(':id', $id, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (Exception | ServerException $exception) {
+            if ($exception instanceof PDOException) {
+                throw ServerException::database($exception);
+            }
+
+            throw ServerException::internal($exception);
+        }
+    }
+
+    public static function bulkDestroyByPostId(PDO $pdo, string $post_id)
+    {
+        try {
+            $statement = $pdo->prepare('DELETE FROM post_images WHERE post_id = :post_id');
+    
+            $statement->bindParam(':post_id', $post_id, PDO::PARAM_INT);
             $statement->execute();
         } catch (Exception | ServerException $exception) {
             if ($exception instanceof PDOException) {
