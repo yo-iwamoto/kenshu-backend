@@ -88,7 +88,7 @@ abstract class Controller
     {
         $this->beforeAction($request);
 
-        if ($request->method === 'POST' || $request->method === 'PUT') {
+        if ($request->method === 'POST' || $request->method === 'PUT' || $request->method === 'DELETE') {
             $this->validateCsrfToken($request);
         }
 
