@@ -10,7 +10,6 @@ use App\services\post\DestroyService;
 use App\services\post\GetService;
 use App\services\post\IndexService;
 use App\services\post\UpdateService;
-
 use Exception;
 
 class PostsController extends Controller
@@ -41,6 +40,10 @@ class PostsController extends Controller
 
             $request->redirect("/posts/{$post->id}");
         } catch (Exception | ServerException $exception) {
+            // デフォルトでは create の例外に対して /new を表示するため、index を指定
+
+            $this->setData('error_message', $exception instanceof ServerException ? $exception->display_text : '不明なエラーが発生しました');
+
             $index_service = new IndexService();
             $posts = $index_service->execute();
             $this->setData('posts', $posts);
