@@ -52,7 +52,9 @@ class UpdateService extends Service
             }
 
             $current_post_image_urls = [];
-            if (isset($request->files['images'])) {
+            $uploaded_images = $request->files['images'];
+            $is_uploaded_images_empty = $uploaded_images['tmp_name'][0] === '';
+            if (!$is_uploaded_images_empty) {
                 // 現在の画像のパスをデータ削除前に取得しておき、トランザクションのコミット後に削除を試行
                 // (トランザクションをロールバックした場合、画像削除はロールバックできないため)
                 $current_post_image_urls = array_map(fn ($post_image) => $post_image->image_url, PostImage::getAllByPostId($pdo, $id));
@@ -62,8 +64,6 @@ class UpdateService extends Service
                 // DB から PostImage を削除
                 PostImage::bulkDestroyByPostId($pdo, $id);
 
-                // 画像の作成
-                $uploaded_images = $request->files['images'];
                 // アップロードされた枚数分繰り返し
                 // TODO: O(n) の回避
                 for ($index = 0; $index < count($uploaded_images['tmp_name']); $index ++) {
