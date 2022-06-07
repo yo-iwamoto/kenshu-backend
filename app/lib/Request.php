@@ -69,7 +69,7 @@ class Request
     public function getCurrentUserId(): string
     {
         if (!$this->isAuthenticated()) {
-            throw ServerException::unauthorized(display_text: 'ログインしてください');
+            throw ServerException::unauthenticated(display_text: 'ログインしてください');
         }
         
         return $this->getSession('user_id');
@@ -82,7 +82,7 @@ class Request
     public function getCurrentUser(): User
     {
         if (!$this->isAuthenticated()) {
-            throw ServerException::unauthorized(display_text: 'ログインしてください');
+            throw ServerException::unauthenticated(display_text: 'ログインしてください');
         }
         
         $service = new UserGetService();

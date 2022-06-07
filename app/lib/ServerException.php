@@ -40,7 +40,12 @@ class ServerException extends Exception
         return new self(ServerExceptionName::INVALID_REQUEST, $display_text, $inner);
     }
 
-    public static function unauthorized(?Exception $inner = null, ?string $display_text = '不正な入力です'): self
+    public static function unauthenticated(?Exception $inner = null, ?string $display_text = '不正な入力です'): self
+    {
+        return new self(ServerExceptionName::UNAUTHENTICATED, $display_text, $inner);
+    }
+
+    public static function unauthorized(?Exception $inner = null, ?string $display_text = '他のユーザーにこの操作を行うことはできません'): self
     {
         return new self(ServerExceptionName::UNAUTHORIZED, $display_text, $inner);
     }
