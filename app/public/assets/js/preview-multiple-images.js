@@ -5,7 +5,7 @@ const main = () => {
   const $thumbnailImageIndexField = document.getElementById('thumbnail_image_index');
 
   if ($imageInput === null || $previewContainer === null || $form === null || $thumbnailImageIndexField === null) {
-    throw new Error();
+    return;
   }
 
   /** @type HTMLImageElement[] */

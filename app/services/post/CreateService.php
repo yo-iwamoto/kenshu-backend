@@ -40,9 +40,9 @@ class CreateService extends Service
                 PostToTag::create($pdo, $post->id, $tag_id);
             }
 
-            if (isset($request->files['images'])) {
-                // 画像の作成
-                $uploaded_images = $request->files['images'];
+            $uploaded_images = $request->files['images'];
+            $is_uploaded_images_empty = $uploaded_images['tmp_name'][0] === '';
+            if (!$is_uploaded_images_empty) {
                 // アップロードされた枚数分繰り返し
                 // TODO: O(n) の回避
                 for ($index = 0; $index < count($uploaded_images['tmp_name']); $index ++) {

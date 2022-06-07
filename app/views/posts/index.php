@@ -1,5 +1,6 @@
 <div class="mt-10 mx-4">
     <div class="max-w-5xl mx-auto">
+
         <section class="mb-12">
             <div class="flex justify-between items-center">
                 <h1 class="mb-4 text-lg">記事投稿</h1>
@@ -103,6 +104,8 @@
                                     <?= htmlspecialchars($post->user__name) ?>
                                 </span>
                             </p>
+
+                            <?php if ($data['is_authenticated'] && $post->user__id === $data['current_user']->id) : ?>
                             <form class="relative"
                                 action="/posts/<?= $post->id ?>/"
                                 method="POST">
@@ -116,6 +119,8 @@
                                     <img class="h-6 w-6" src="/assets/img/trash.png">
                                 </button>
                             </form>
+                            <?php endif ?>
+
                         </div>
                     </div>
                 </a>

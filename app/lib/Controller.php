@@ -67,6 +67,7 @@ abstract class Controller
     {
         $is_authenticated = $request->isAuthenticated();
         $this->setData('is_authenticated', $is_authenticated);
+        $this->setData('current_user', $is_authenticated ? $request->getCurrentUser() : null);
 
         // CSRF token の生成・セット
         $csrf_token = bin2hex(random_bytes(32));
@@ -88,7 +89,7 @@ abstract class Controller
     {
         $this->beforeAction($request);
 
-        if ($request->method === 'POST' || $request->method === 'PUT') {
+        if ($request->method === 'POST' || $request->method === 'PUT' || $request->method === 'DELETE') {
             $this->validateCsrfToken($request);
         }
 
