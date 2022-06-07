@@ -9,10 +9,6 @@ class SessionsController extends Controller
 {
     const VIEW_DIR = 'sessions/';
 
-    protected function beforeAction($request)
-    {
-    }
-
     protected function new($request)
     {
         // ログイン状態の時、記事一覧画面へリダイレクト

@@ -1,7 +1,6 @@
 <?php
 namespace App\controllers;
 
-use App\lib\Request;
 use App\lib\Controller;
 
 class HomeController extends Controller

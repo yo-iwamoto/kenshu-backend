@@ -1,8 +1,6 @@
 <div class="mt-10 mx-4">
     <div class="max-w-5xl mx-auto">
 
-        <?php if ($data['is_authenticated']) : ?>
-
         <section class="mb-12">
             <div class="flex justify-between items-center">
                 <h1 class="mb-4 text-lg">記事投稿</h1>
@@ -74,8 +72,6 @@
         </section>
 
         <hr class="mb-6">
-
-        <?php endif ?>
 
         <section class="mb-20">
             <h1 class="mb-8 text-lg">記事一覧</h1>
