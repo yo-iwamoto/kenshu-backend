@@ -3,6 +3,7 @@ namespace App\services\session;
 
 use App\lib\Request;
 use App\lib\ServerException;
+use App\lib\ServerExceptionName;
 use App\models\User;
 use App\services\concerns\Service;
 
