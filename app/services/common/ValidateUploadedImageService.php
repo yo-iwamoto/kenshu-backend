@@ -1,6 +1,8 @@
 <?php
 namespace App\services\common;
 
+use App\lib\ServerException;
+
 class ValidateUploadedImageService
 {
     /**
